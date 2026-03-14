@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MZM Wealth | Pesquisa de Satisfação</title>
+    <meta
+      name="description"
+      content="Central da pesquisa de satisfação da MZM Wealth com envio de convites, captura de respostas e dashboard executivo."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <a class="brand" href="#home" data-view-link="home">
+          <img src="Logo%20MZM.png" alt="Logo da MZM Wealth" class="brand-mark" />
+          <div>
+            <span class="brand-name">MZM Wealth</span>
+            <span class="brand-tag">Pesquisa de Satisfação</span>
+          </div>
+        </a>
+
+        <nav class="topnav" aria-label="Navegação principal">
+          <button type="button" class="nav-link is-active" data-view-link="home">Visão Geral</button>
+          <button type="button" class="nav-link" data-view-link="send">Enviar</button>
+          <button type="button" class="nav-link" data-view-link="survey">Responder</button>
+          <button type="button" class="nav-link" data-view-link="dashboard">Dashboard</button>
+        </nav>
+      </header>
+
+      <main>
+        <section class="view is-active" id="view-home" data-view="home">
+          <section class="hero">
+            <div class="hero-copy">
+              <span class="eyebrow">MVP institucional + operacional</span>
+              <h1>Uma experiência de NPS feita para um Multi Family Office.</h1>
+              <p class="hero-text">
+                Estruturamos uma jornada completa para a MZM Wealth: geração do convite, formulário de
+                satisfação com linguagem consultiva e um dashboard executivo para leitura rápida da experiência
+                dos clientes.
+              </p>
+              <div class="hero-actions">
+                <button type="button" class="button button-primary" data-view-link="send">Criar convites</button>
+                <button type="button" class="button button-secondary" data-view-link="dashboard">
+                  Ver relatório
+                </button>
+              </div>
+            </div>
+
+            <div class="hero-panel glass-card">
+              <div class="panel-header">
+                <span>Radar da Experiência</span>
+                <span class="live-pill">Atualização local</span>
+              </div>
+              <div class="hero-metrics" id="hero-metrics"></div>
+              <div class="hero-note">
+                Este MVP já funciona no navegador e está preparado para evolução futura com banco de dados,
+                automação de disparo e integração com CRM.
+              </div>
+            </div>
+          </section>
+
+          <section class="section-grid">
+            <article class="feature-card">
+              <span class="feature-index">01</span>
+              <h2>Envio com contexto</h2>
+              <p>
+                Gere links personalizados para cada cliente e use um texto de convite com tom alinhado ao
+                posicionamento da MZM Wealth.
+              </p>
+            </article>
+
+            <article class="feature-card">
+              <span class="feature-index">02</span>
+              <h2>Resposta simples</h2>
+              <p>
+                O cliente responde o NPS, avalia pilares da consultoria e deixa comentários qualitativos em
+                uma interface leve e responsiva.
+              </p>
+            </article>
+
+            <article class="feature-card">
+              <span class="feature-index">03</span>
+              <h2>Análise executiva</h2>
+              <p>
+                O painel mostra NPS, evolução, drivers de satisfação e comentários recentes para orientar
+                decisões comerciais e de relacionamento.
+              </p>
+            </article>
+          </section>
+
+          <section class="split-layout">
+            <article class="glass-card story-card">
+              <span class="section-label">Jornada recomendada</span>
+              <h2>Uma operação enxuta para ouvir clientes de forma recorrente.</h2>
+              <ol class="journey-list">
+                <li>Selecionar cliente, advisor e segmento antes do envio.</li>
+                <li>Compartilhar o link individual da pesquisa por e-mail ou WhatsApp.</li>
+                <li>Receber a resposta com nota NPS, avaliação por pilar e comentário aberto.</li>
+                <li>Interpretar os sinais no dashboard e priorizar planos de ação.</li>
+              </ol>
+            </article>
+
+            <article class="glass-card audience-card">
+              <span class="section-label">Pilares avaliados</span>
+              <div class="pillar-grid">
+                <div>
+                  <strong>Atendimento</strong>
+                  <p>Agilidade, clareza e cordialidade no relacionamento.</p>
+                </div>
+                <div>
+                  <strong>Estratégia</strong>
+                  <p>Percepção de valor da consultoria e aderência das recomendações.</p>
+                </div>
+                <div>
+                  <strong>Comunicação</strong>
+                  <p>Frequência, objetividade e transparência das atualizações.</p>
+                </div>
+                <div>
+                  <strong>Confiança</strong>
+                  <p>Segurança para seguir a MZM Wealth em decisões relevantes.</p>
+                </div>
+              </div>
+            </article>
+          </section>
+        </section>
+
+        <section class="view" id="view-send" data-view="send">
+          <section class="section-header">
+            <span class="eyebrow">Central de envio</span>
+            <h1>Monte o convite da pesquisa em poucos passos.</h1>
+            <p>
+              Gere um link individual, visualize a experiência do cliente e copie uma sugestão de mensagem para
+              disparo.
+            </p>
+          </section>
+
+          <section class="send-layout">
+            <article class="glass-card">
+              <h2>Dados do convite</h2>
+              <form id="invite-form" class="form-grid">
+                <label>
+                  Nome do cliente
+                  <input type="text" name="clientName" placeholder="Ex.: Família Andrade" required />
+                </label>
+
+                <label>
+                  E-mail
+                  <input type="email" name="clientEmail" placeholder="cliente@exemplo.com" />
+                </label>
+
+                <label>
+                  Advisor responsável
+                  <select name="advisor">
+                    <option>Marcelo Zamboni</option>
+                    <option>Maria Silva</option>
+                    <option>Equipe Wealth Planning</option>
+                  </select>
+                </label>
+
+                <label>
+                  Segmento
+                  <select name="segment">
+                    <option>Multi Family Office</option>
+                    <option>Planejamento Patrimonial</option>
+                    <option>Sucessão & Governança</option>
+                    <option>Empresários</option>
+                  </select>
+                </label>
+
+                <label class="field-span">
+                  Observação para personalização
+                  <textarea
+                    name="relationshipNote"
+                    rows="3"
+                    placeholder="Ex.: cliente recém-onboarded, reunião semestral concluída, foco em sucessão."
+                  ></textarea>
+                </label>
+              </form>
+
+              <div class="button-row">
+                <button type="button" class="button button-primary" id="generate-link">Gerar link</button>
+                <button type="button" class="button button-secondary" id="preview-link">Abrir preview</button>
+              </div>
+            </article>
+
+            <article class="glass-card invite-output">
+              <div class="panel-header">
+                <h2>Link gerado</h2>
+                <span class="status-badge" id="invite-status">Aguardando dados</span>
+              </div>
+
+              <label class="field-stack">
+                URL da pesquisa
+                <input type="text" id="invite-url" readonly value="Preencha os dados e clique em gerar link." />
+              </label>
+
+              <label class="field-stack">
+                Mensagem sugerida
+                <textarea id="invite-message" rows="9" readonly>
+Preencha os dados do convite para gerar uma mensagem personalizada.
+                </textarea>
+              </label>
+
+              <div class="button-row">
+                <button type="button" class="button button-secondary" id="copy-link">Copiar link</button>
+                <button type="button" class="button button-secondary" id="copy-message">Copiar mensagem</button>
+                <a href="#" class="button button-ghost" id="email-link">Abrir e-mail</a>
+              </div>
+            </article>
+          </section>
+        </section>
+
+        <section class="view" id="view-survey" data-view="survey">
+          <section class="section-header compact">
+            <span class="eyebrow">Coleta da resposta</span>
+            <h1>Pesquisa de satisfação MZM Wealth</h1>
+            <p id="survey-intro">
+              Sua percepção é essencial para evoluirmos a experiência consultiva oferecida aos nossos clientes.
+            </p>
+          </section>
+
+          <section class="survey-layout">
+            <article class="glass-card survey-card">
+              <div class="survey-context" id="survey-context"></div>
+
+              <form id="survey-form" class="survey-form">
+                <fieldset class="score-fieldset">
+                  <legend>De 0 a 10, o quanto você recomendaria a MZM Wealth a um amigo ou colega?</legend>
+                  <div class="score-grid" id="score-grid"></div>
+                  <div class="score-scale">
+                    <span>Pouco provável</span>
+                    <span>Muito provável</span>
+                  </div>
+                </fieldset>
+
+                <div class="ratings-grid">
+                  <label>
+                    Atendimento
+                    <input type="range" name="service" min="1" max="5" value="4" />
+                    <span class="range-hint">1 = baixo | 5 = excelente</span>
+                  </label>
+                  <label>
+                    Estratégia financeira
+                    <input type="range" name="strategy" min="1" max="5" value="4" />
+                    <span class="range-hint">1 = baixo | 5 = excelente</span>
+                  </label>
+                  <label>
+                    Comunicação
+                    <input type="range" name="communication" min="1" max="5" value="4" />
+                    <span class="range-hint">1 = baixo | 5 = excelente</span>
+                  </label>
+                  <label>
+                    Confiança na equipe
+                    <input type="range" name="trust" min="1" max="5" value="5" />
+                    <span class="range-hint">1 = baixo | 5 = excelente</span>
+                  </label>
+                </div>
+
+                <label>
+                  O que mais gerou valor na sua experiência com a MZM Wealth?
+                  <textarea
+                    name="strengths"
+                    rows="4"
+                    placeholder="Conte brevemente o que percebe como diferencial no atendimento e na consultoria."
+                  ></textarea>
+                </label>
+
+                <label>
+                  Em que ponto poderíamos evoluir?
+                  <textarea
+                    name="improvements"
+                    rows="4"
+                    placeholder="Se houver algo que possa ser aprimorado, deixe sua sugestão."
+                  ></textarea>
+                </label>
+
+                <label>
+                  Qual é o momento da sua jornada conosco?
+                  <select name="journeyStage">
+                    <option value="onboarding">Onboarding recente</option>
+                    <option value="relacionamento">Relacionamento recorrente</option>
+                    <option value="planejamento">Projeto de planejamento</option>
+                    <option value="sucessao">Estruturação sucessória</option>
+                  </select>
+                </label>
+
+                <label class="checkbox-row">
+                  <input type="checkbox" name="allowContact" checked />
+                  Autorizo contato da equipe para aprofundar meu feedback, se necessário.
+                </label>
+
+                <button type="submit" class="button button-primary button-full">Enviar resposta</button>
+              </form>
+
+              <div class="success-state hidden" id="survey-success">
+                <h2>Resposta recebida com sucesso.</h2>
+                <p>
+                  Obrigado por compartilhar sua percepção. O time da MZM Wealth poderá usar esse retorno para
+                  elevar ainda mais a experiência consultiva.
+                </p>
+                <div class="button-row">
+                  <button type="button" class="button button-secondary" data-view-link="dashboard">
+                    Ir para o dashboard
+                  </button>
+                  <button type="button" class="button button-ghost" id="new-response">
+                    Registrar nova resposta
+                  </button>
+                </div>
+              </div>
+            </article>
+
+            <aside class="glass-card insight-card">
+              <span class="section-label">Leitura do formulário</span>
+              <h2>O que esta pesquisa mede</h2>
+              <ul class="insight-list">
+                <li>NPS para sinalizar lealdade e potencial de recomendação.</li>
+                <li>Pilares operacionais para identificar onde a experiência é mais forte.</li>
+                <li>Comentários qualitativos para guiar ações de retenção e encantamento.</li>
+              </ul>
+            </aside>
+          </section>
+        </section>
+
+        <section class="view" id="view-dashboard" data-view="dashboard">
+          <section class="section-header">
+            <span class="eyebrow">Análise executiva</span>
+            <h1>Dashboard da pesquisa de satisfação</h1>
+            <p>
+              KPIs de relacionamento, leitura dos comentários e visão consolidada da experiência percebida pelos
+              clientes.
+            </p>
+          </section>
+
+          <section class="glass-card filters-card">
+            <div class="filters-grid">
+              <label>
+                Advisor
+                <select id="filter-advisor">
+                  <option value="all">Todos</option>
+                </select>
+              </label>
+
+              <label>
+                Segmento
+                <select id="filter-segment">
+                  <option value="all">Todos</option>
+                </select>
+              </label>
+
+              <label>
+                Buscar cliente
+                <input type="search" id="filter-search" placeholder="Nome do cliente" />
+              </label>
+            </div>
+
+            <div class="button-row">
+              <button type="button" class="button button-secondary" id="export-json">Exportar JSON</button>
+              <button type="button" class="button button-secondary" id="export-csv">Exportar CSV</button>
+              <button type="button" class="button button-ghost" id="load-demo">Recarregar dados demo</button>
+            </div>
+          </section>
+
+          <section class="metrics-grid" id="dashboard-metrics"></section>
+
+          <section class="dashboard-grid">
+            <article class="glass-card chart-card">
+              <div class="panel-header">
+                <h2>Distribuição de notas NPS</h2>
+                <span id="nps-summary">0 respostas</span>
+              </div>
+              <div id="score-chart" class="chart-surface"></div>
+            </article>
+
+            <article class="glass-card chart-card">
+              <div class="panel-header">
+                <h2>Pilares da experiência</h2>
+                <span>Média por dimensão</span>
+              </div>
+              <div id="pillar-chart" class="chart-surface"></div>
+            </article>
+
+            <article class="glass-card chart-card wide">
+              <div class="panel-header">
+                <h2>Evolução mensal</h2>
+                <span>Notas médias por período</span>
+              </div>
+              <div id="trend-chart" class="chart-surface"></div>
+            </article>
+
+            <article class="glass-card chart-card">
+              <div class="panel-header">
+                <h2>Insights qualitativos</h2>
+                <span>Leitura automática simples</span>
+              </div>
+              <div id="insights-panel" class="insights-panel"></div>
+            </article>
+          </section>
+
+          <section class="glass-card table-card">
+            <div class="panel-header">
+              <h2>Respostas recentes</h2>
+              <span id="last-updated"></span>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Cliente</th>
+                    <th>Advisor</th>
+                    <th>Segmento</th>
+                    <th>NPS</th>
+                    <th>Pilar médio</th>
+                    <th>Comentário</th>
+                  </tr>
+                </thead>
+                <tbody id="responses-table"></tbody>
+              </table>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
