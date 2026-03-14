@@ -37,8 +37,8 @@
               <h1>Uma experiência de NPS feita para um Multi Family Office.</h1>
               <p class="hero-text">
                 Estruturamos uma jornada completa para a MZM Wealth: geração do convite, formulário de
-                satisfação com linguagem consultiva e um dashboard executivo para leitura rápida da experiência
-                dos clientes.
+                satisfação com NPS e CSAT em linguagem consultiva e um dashboard executivo para leitura rápida
+                da experiência dos clientes.
               </p>
               <div class="hero-actions">
                 <button type="button" class="button button-primary" data-view-link="send">Criar convites</button>
@@ -56,7 +56,7 @@
               <div class="hero-metrics" id="hero-metrics"></div>
               <div class="hero-note">
                 Este MVP já funciona no navegador e está preparado para evolução futura com banco de dados,
-                automação de disparo e integração com CRM.
+                automação de disparo, integração com CRM e consolidação centralizada das respostas.
               </div>
             </div>
           </section>
@@ -75,8 +75,8 @@
               <span class="feature-index">02</span>
               <h2>Resposta simples</h2>
               <p>
-                O cliente responde o NPS, avalia pilares da consultoria e deixa comentários qualitativos em
-                uma interface leve e responsiva.
+                O cliente responde o NPS, avalia a satisfação em CSAT com pilares alternados e deixa
+                comentários qualitativos em uma interface leve e responsiva.
               </p>
             </article>
 
@@ -84,7 +84,7 @@
               <span class="feature-index">03</span>
               <h2>Análise executiva</h2>
               <p>
-                O painel mostra NPS, evolução, drivers de satisfação e comentários recentes para orientar
+                O painel mostra CSAT, NPS, evolução, drivers de satisfação e comentários recentes para orientar
                 decisões comerciais e de relacionamento.
               </p>
             </article>
@@ -97,7 +97,7 @@
               <ol class="journey-list">
                 <li>Selecionar cliente, advisor e segmento antes do envio.</li>
                 <li>Compartilhar o link individual da pesquisa por e-mail ou WhatsApp.</li>
-                <li>Receber a resposta com nota NPS, avaliação por pilar e comentário aberto.</li>
+                <li>Receber a resposta com NPS, bloco CSAT por atributos e comentários abertos.</li>
                 <li>Interpretar os sinais no dashboard e priorizar planos de ação.</li>
               </ol>
             </article>
@@ -227,7 +227,7 @@ Preencha os dados do convite para gerar uma mensagem personalizada.
 
               <form id="survey-form" class="survey-form">
                 <fieldset class="score-fieldset">
-                  <legend>De 0 a 10, o quanto você recomendaria a MZM Wealth a um amigo ou colega?</legend>
+                  <legend>1. De 0 a 10, o quanto você recomendaria a MZM Wealth a um amigo ou familiar?</legend>
                   <div class="score-grid" id="score-grid"></div>
                   <div class="score-scale">
                     <span>Pouco provável</span>
@@ -235,44 +235,41 @@ Preencha os dados do convite para gerar uma mensagem personalizada.
                   </div>
                 </fieldset>
 
-                <div class="ratings-grid">
-                  <label>
-                    Atendimento
-                    <input type="range" name="service" min="1" max="5" value="4" />
-                    <span class="range-hint">1 = baixo | 5 = excelente</span>
-                  </label>
-                  <label>
-                    Estratégia financeira
-                    <input type="range" name="strategy" min="1" max="5" value="4" />
-                    <span class="range-hint">1 = baixo | 5 = excelente</span>
-                  </label>
-                  <label>
-                    Comunicação
-                    <input type="range" name="communication" min="1" max="5" value="4" />
-                    <span class="range-hint">1 = baixo | 5 = excelente</span>
-                  </label>
-                  <label>
-                    Confiança na equipe
-                    <input type="range" name="trust" min="1" max="5" value="5" />
-                    <span class="range-hint">1 = baixo | 5 = excelente</span>
-                  </label>
-                </div>
+                <section class="csat-block" aria-labelledby="csat-title">
+                  <div class="csat-header">
+                    <h2 id="csat-title">Perguntas de satisfação (CSAT)</h2>
+                    <p>
+                      Para as perguntas 2 a 12, avalie seu nível de satisfação de 1 a 5, em que 1 =
+                      Muito insatisfeito(a) e 5 = Muito satisfeito(a).
+                    </p>
+                  </div>
+                  <div id="csat-questions" class="csat-questions"></div>
+                </section>
 
                 <label>
-                  O que mais gerou valor na sua experiência com a MZM Wealth?
+                  13. O que você mais valoriza na nossa relação e no nosso trabalho?
                   <textarea
                     name="strengths"
                     rows="4"
-                    placeholder="Conte brevemente o que percebe como diferencial no atendimento e na consultoria."
+                    placeholder="Conte brevemente o que mais gera valor na sua experiência com a MZM Wealth."
                   ></textarea>
                 </label>
 
                 <label>
-                  Em que ponto poderíamos evoluir?
+                  14. O que poderíamos melhorar ou fazer de forma diferente?
                   <textarea
                     name="improvements"
                     rows="4"
                     placeholder="Se houver algo que possa ser aprimorado, deixe sua sugestão."
+                  ></textarea>
+                </label>
+
+                <label>
+                  15. Há algo que você gostaria de comentar e que não foi abordado nesta pesquisa?
+                  <textarea
+                    name="otherComments"
+                    rows="4"
+                    placeholder="Use este espaço para acrescentar qualquer percepção adicional."
                   ></textarea>
                 </label>
 
@@ -316,7 +313,7 @@ Preencha os dados do convite para gerar uma mensagem personalizada.
               <h2>O que esta pesquisa mede</h2>
               <ul class="insight-list">
                 <li>NPS para sinalizar lealdade e potencial de recomendação.</li>
-                <li>Pilares operacionais para identificar onde a experiência é mais forte.</li>
+                <li>CSAT para medir satisfação objetiva em atributos da experiência.</li>
                 <li>Comentários qualitativos para guiar ações de retenção e encantamento.</li>
               </ul>
             </aside>
@@ -328,8 +325,8 @@ Preencha os dados do convite para gerar uma mensagem personalizada.
             <span class="eyebrow">Análise executiva</span>
             <h1>Dashboard da pesquisa de satisfação</h1>
             <p>
-              KPIs de relacionamento, leitura dos comentários e visão consolidada da experiência percebida pelos
-              clientes.
+              KPIs de relacionamento, leitura CSAT dos atributos da experiência, NPS relacional e visão
+              consolidada dos comentários dos clientes.
             </p>
           </section>
 
@@ -375,8 +372,8 @@ Preencha os dados do convite para gerar uma mensagem personalizada.
 
             <article class="glass-card chart-card">
               <div class="panel-header">
-                <h2>Pilares da experiência</h2>
-                <span>Média por dimensão</span>
+                <h2>Pilares da satisfação</h2>
+                <span>Média CSAT por dimensão</span>
               </div>
               <div id="pillar-chart" class="chart-surface"></div>
             </article>
@@ -384,7 +381,7 @@ Preencha os dados do convite para gerar uma mensagem personalizada.
             <article class="glass-card chart-card wide">
               <div class="panel-header">
                 <h2>Evolução mensal</h2>
-                <span>Notas médias por período</span>
+                <span>CSAT por período</span>
               </div>
               <div id="trend-chart" class="chart-surface"></div>
             </article>
@@ -411,8 +408,8 @@ Preencha os dados do convite para gerar uma mensagem personalizada.
                     <th>Cliente</th>
                     <th>Advisor</th>
                     <th>Segmento</th>
+                    <th>CSAT</th>
                     <th>NPS</th>
-                    <th>Pilar médio</th>
                     <th>Comentário</th>
                   </tr>
                 </thead>

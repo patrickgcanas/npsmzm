@@ -1,4 +1,4 @@
-const STORAGE_KEY = "mzm-wealth-nps-responses-v1";
+const STORAGE_KEY = "mzm-wealth-csat-responses-v2";
 const DEFAULT_VIEW = "home";
 const views = ["home", "send", "survey", "dashboard"];
 const advisors = ["Marcelo Zamboni", "Maria Silva", "Equipe Wealth Planning"];
@@ -9,6 +9,103 @@ const segments = [
   "Empresários",
 ];
 
+const csatQuestions = [
+  {
+    id: "contactEase",
+    number: 2,
+    pillar: "NA",
+    pillarLabel: "Nosso Atendimento",
+    shortLabel: "Contato com o consultor",
+    prompt: "Facilidade de contato com meu consultor quando necessário.",
+  },
+  {
+    id: "reportClarity",
+    number: 3,
+    pillar: "NS",
+    pillarLabel: "Nosso Serviço",
+    shortLabel: "Relatório mensal",
+    prompt: "Clareza, utilidade e relevância do relatório mensal.",
+  },
+  {
+    id: "modelTransparency",
+    number: 4,
+    pillar: "NN",
+    pillarLabel: "Nosso Negócio",
+    shortLabel: "Transparência do modelo",
+    prompt: "Transparência e compreensão do modelo de consultoria.",
+  },
+  {
+    id: "responseTime",
+    number: 5,
+    pillar: "NA",
+    pillarLabel: "Nosso Atendimento",
+    shortLabel: "Tempo de retorno",
+    prompt: "Tempo de retorno do time de operações às minhas demandas.",
+  },
+  {
+    id: "planningFit",
+    number: 6,
+    pillar: "NS",
+    pillarLabel: "Nosso Serviço",
+    shortLabel: "Aderência do planejamento",
+    prompt: "Aderência do planejamento financeiro ao meu momento de vida.",
+  },
+  {
+    id: "interestAlignment",
+    number: 7,
+    pillar: "NN",
+    pillarLabel: "Nosso Negócio",
+    shortLabel: "Alinhamento de interesses",
+    prompt: "Alinhamento de interesses entre a MZM Wealth e meus objetivos.",
+  },
+  {
+    id: "meetingFrequency",
+    number: 8,
+    pillar: "NA",
+    pillarLabel: "Nosso Atendimento",
+    shortLabel: "Frequência das reuniões",
+    prompt: "Frequência das reuniões de acompanhamento.",
+  },
+  {
+    id: "solutionsSupport",
+    number: 9,
+    pillar: "NS",
+    pillarLabel: "Nosso Serviço",
+    shortLabel: "Soluções e operações",
+    prompt: "Soluções apresentadas e suporte do time de operações.",
+  },
+  {
+    id: "meetingClarity",
+    number: 10,
+    pillar: "NA",
+    pillarLabel: "Nosso Atendimento",
+    shortLabel: "Clareza nas reuniões",
+    prompt: "Clareza e didática das explicações nas reuniões.",
+  },
+  {
+    id: "engagement",
+    number: 11,
+    pillar: "NN",
+    pillarLabel: "Nosso Negócio",
+    shortLabel: "Engajamento",
+    prompt: "Engajamento e participação nas etapas da consultoria.",
+  },
+  {
+    id: "advisorRelevance",
+    number: 12,
+    pillar: "NA",
+    pillarLabel: "Nosso Atendimento",
+    shortLabel: "Relevância do consultor",
+    prompt: "Relevância ativa do consultor nas decisões da minha vida financeira.",
+  },
+];
+
+const pillarOrder = [
+  { key: "NA", label: "Nosso Atendimento" },
+  { key: "NS", label: "Nosso Serviço" },
+  { key: "NN", label: "Nosso Negócio" },
+];
+
 const demoResponses = [
   {
     id: generateId(),
@@ -17,13 +114,23 @@ const demoResponses = [
     clientEmail: "andrade@example.com",
     advisor: "Marcelo Zamboni",
     segment: "Multi Family Office",
-    score: 10,
-    service: 5,
-    strategy: 5,
-    communication: 4,
-    trust: 5,
+    npsScore: 10,
+    csatAnswers: {
+      contactEase: 5,
+      reportClarity: 5,
+      modelTransparency: 5,
+      responseTime: 4,
+      planningFit: 5,
+      interestAlignment: 5,
+      meetingFrequency: 4,
+      solutionsSupport: 5,
+      meetingClarity: 5,
+      engagement: 4,
+      advisorRelevance: 5,
+    },
     strengths: "A equipe transmite muita segurança e entende o contexto patrimonial da família.",
     improvements: "Gostaria de receber um resumo executivo mensal ainda mais visual.",
+    otherComments: "A experiência é muito próxima do que esperamos de um multi family office.",
     journeyStage: "relacionamento",
     allowContact: true,
   },
@@ -34,13 +141,23 @@ const demoResponses = [
     clientEmail: "nunes@example.com",
     advisor: "Maria Silva",
     segment: "Planejamento Patrimonial",
-    score: 8,
-    service: 4,
-    strategy: 4,
-    communication: 4,
-    trust: 4,
+    npsScore: 8,
+    csatAnswers: {
+      contactEase: 4,
+      reportClarity: 4,
+      modelTransparency: 4,
+      responseTime: 3,
+      planningFit: 4,
+      interestAlignment: 4,
+      meetingFrequency: 4,
+      solutionsSupport: 4,
+      meetingClarity: 4,
+      engagement: 4,
+      advisorRelevance: 4,
+    },
     strengths: "O planejamento foi muito claro e a comunicação durante o processo foi consistente.",
     improvements: "Poderiam reduzir o tempo entre a reunião e o envio das recomendações finais.",
+    otherComments: "",
     journeyStage: "planejamento",
     allowContact: true,
   },
@@ -51,13 +168,23 @@ const demoResponses = [
     clientEmail: "ferraz@example.com",
     advisor: "Marcelo Zamboni",
     segment: "Empresários",
-    score: 9,
-    service: 5,
-    strategy: 4,
-    communication: 4,
-    trust: 5,
+    npsScore: 9,
+    csatAnswers: {
+      contactEase: 5,
+      reportClarity: 4,
+      modelTransparency: 5,
+      responseTime: 4,
+      planningFit: 4,
+      interestAlignment: 5,
+      meetingFrequency: 4,
+      solutionsSupport: 4,
+      meetingClarity: 5,
+      engagement: 4,
+      advisorRelevance: 5,
+    },
     strengths: "Conseguimos alinhar decisões do negócio e do patrimônio pessoal com muito mais clareza.",
     improvements: "Seria útil ampliar a frequência das reuniões de acompanhamento no trimestre.",
+    otherComments: "",
     journeyStage: "relacionamento",
     allowContact: false,
   },
@@ -68,13 +195,23 @@ const demoResponses = [
     clientEmail: "renata@example.com",
     advisor: "Equipe Wealth Planning",
     segment: "Sucessão & Governança",
-    score: 6,
-    service: 3,
-    strategy: 4,
-    communication: 3,
-    trust: 4,
+    npsScore: 6,
+    csatAnswers: {
+      contactEase: 3,
+      reportClarity: 4,
+      modelTransparency: 4,
+      responseTime: 3,
+      planningFit: 4,
+      interestAlignment: 4,
+      meetingFrequency: 3,
+      solutionsSupport: 4,
+      meetingClarity: 3,
+      engagement: 3,
+      advisorRelevance: 4,
+    },
     strengths: "A profundidade técnica foi muito positiva e trouxe conforto para avançar no tema sucessório.",
     improvements: "Gostaria de mais previsibilidade de prazo em cada etapa do projeto.",
+    otherComments: "Uma visão mais clara de cronograma ajudaria muito.",
     journeyStage: "sucessao",
     allowContact: true,
   },
@@ -85,13 +222,23 @@ const demoResponses = [
     clientEmail: "pires@example.com",
     advisor: "Maria Silva",
     segment: "Multi Family Office",
-    score: 10,
-    service: 5,
-    strategy: 5,
-    communication: 5,
-    trust: 5,
+    npsScore: 10,
+    csatAnswers: {
+      contactEase: 5,
+      reportClarity: 5,
+      modelTransparency: 5,
+      responseTime: 5,
+      planningFit: 5,
+      interestAlignment: 5,
+      meetingFrequency: 4,
+      solutionsSupport: 5,
+      meetingClarity: 5,
+      engagement: 5,
+      advisorRelevance: 5,
+    },
     strengths: "A proximidade do time e a capacidade de traduzir temas complexos nos deixam muito tranquilos.",
     improvements: "",
+    otherComments: "O padrão de atendimento é muito consistente.",
     journeyStage: "onboarding",
     allowContact: false,
   },
@@ -124,6 +271,7 @@ const elements = {
   surveySuccess: document.getElementById("survey-success"),
   surveyContext: document.getElementById("survey-context"),
   surveyIntro: document.getElementById("survey-intro"),
+  csatQuestions: document.getElementById("csat-questions"),
 };
 
 document.addEventListener("DOMContentLoaded", init);
@@ -131,6 +279,7 @@ document.addEventListener("DOMContentLoaded", init);
 function init() {
   seedResponsesIfNeeded();
   buildScoreOptions();
+  buildCsatQuestions();
   populateFilterOptions();
   bindNavigation();
   bindActions();
@@ -250,11 +399,38 @@ function buildScoreOptions() {
     const label = document.createElement("label");
     label.className = "score-option";
     label.innerHTML = `
-      <input type="radio" name="score" value="${score}" ${score === 10 ? "checked" : ""} required />
+      <input type="radio" name="npsScore" value="${score}" required />
       <span>${score}</span>
     `;
     scoreGrid.appendChild(label);
   });
+}
+
+function buildCsatQuestions() {
+  elements.csatQuestions.innerHTML = csatQuestions
+    .map(
+      (question) => `
+        <article class="csat-card">
+          <div class="question-meta">
+            <span class="question-number">${question.number}</span>
+            <span class="pillar-pill">${question.pillar} · ${question.pillarLabel}</span>
+          </div>
+          <p class="question-prompt">${question.prompt}</p>
+          <div class="csat-scale" role="radiogroup" aria-label="${escapeHtml(question.prompt)}">
+            ${Array.from({ length: 5 }, (_, index) => {
+              const value = index + 1;
+              return `
+                <label class="csat-option">
+                  <input type="radio" name="${question.id}" value="${value}" ${value === 1 ? "required" : ""} />
+                  <span>${value}</span>
+                </label>
+              `;
+            }).join("")}
+          </div>
+        </article>
+      `
+    )
+    .join("");
 }
 
 function generateInvite() {
@@ -287,9 +463,9 @@ function generateInvite() {
 
   const noteLine = relationshipNote
     ? `Considerando nosso contexto recente (${relationshipNote}), seu retorno nos ajudará a aprimorar ainda mais a experiência.`
-    : "Seu retorno nos ajudará a evoluir continuamente o padrão de atendimento e a experiência consultiva.";
+    : "Seu retorno nos ajudará a evoluir continuamente o padrão de atendimento, a satisfação percebida e a experiência consultiva.";
 
-  const message = `Olá, ${clientName}.\n\nAqui é a equipe da MZM Wealth. Preparamos uma pesquisa breve para entender como você percebe nosso atendimento e a qualidade da consultoria prestada.\n\n${noteLine}\n\nVocê pode responder neste link:\n${state.inviteLink}\n\nA pesquisa leva cerca de 2 minutos.\n\nMuito obrigado,\n${advisor}\nMZM Wealth`;
+  const message = `Olá, ${clientName}.\n\nAqui é a equipe da MZM Wealth. Preparamos uma pesquisa breve para entender como você percebe nossa atuação e sua satisfação com a experiência consultiva.\n\n${noteLine}\n\nVocê pode responder neste link:\n${state.inviteLink}\n\nA pesquisa leva cerca de 3 minutos.\n\nMuito obrigado,\n${advisor}\nMZM Wealth`;
 
   elements.inviteMessage.value = message;
   elements.emailLink.href = createMailtoLink(clientEmail, message);
@@ -348,8 +524,8 @@ function hydrateSurveyFromUrl() {
     : `<span class="context-pill">Resposta aberta</span>`;
 
   elements.surveyIntro.textContent = client
-    ? `${client}, sua percepção é essencial para evoluirmos a experiência consultiva da MZM Wealth.`
-    : "Sua percepção é essencial para evoluirmos a experiência consultiva oferecida aos nossos clientes.";
+    ? `${client}, sua percepção é essencial para evoluirmos a satisfação e a experiência consultiva da MZM Wealth.`
+    : "Sua percepção é essencial para evoluirmos a satisfação e a experiência consultiva oferecida aos nossos clientes.";
 
   if (email) {
     elements.surveyForm.dataset.email = email;
@@ -366,6 +542,11 @@ function submitSurvey(event) {
   event.preventDefault();
 
   const formData = new FormData(elements.surveyForm);
+  const csatAnswers = {};
+  csatQuestions.forEach((question) => {
+    csatAnswers[question.id] = Number(formData.get(question.id));
+  });
+
   const response = {
     id: generateId(),
     createdAt: new Date().toISOString(),
@@ -373,13 +554,11 @@ function submitSurvey(event) {
     clientEmail: elements.surveyForm.dataset.email || "",
     advisor: elements.surveyForm.dataset.advisor || "Não informado",
     segment: elements.surveyForm.dataset.segment || "Não informado",
-    score: Number(formData.get("score")),
-    service: Number(formData.get("service")),
-    strategy: Number(formData.get("strategy")),
-    communication: Number(formData.get("communication")),
-    trust: Number(formData.get("trust")),
+    npsScore: Number(formData.get("npsScore")),
+    csatAnswers,
     strengths: (formData.get("strengths") || "").toString().trim(),
     improvements: (formData.get("improvements") || "").toString().trim(),
+    otherComments: (formData.get("otherComments") || "").toString().trim(),
     journeyStage: (formData.get("journeyStage") || "").toString(),
     allowContact: formData.get("allowContact") === "on",
   };
@@ -395,10 +574,6 @@ function submitSurvey(event) {
 
 function resetSurvey() {
   elements.surveyForm.reset();
-  const defaultScore = elements.surveyForm.querySelector('input[name="score"][value="10"]');
-  if (defaultScore) {
-    defaultScore.checked = true;
-  }
   elements.surveyForm.classList.remove("hidden");
   elements.surveySuccess.classList.add("hidden");
 }
@@ -411,11 +586,15 @@ function getFilteredResponses() {
   return state.responses.filter((response) => {
     const advisorMatch = advisor === "all" || response.advisor === advisor;
     const segmentMatch = segment === "all" || response.segment === segment;
-    const searchMatch =
-      !search ||
-      response.clientName.toLowerCase().includes(search) ||
-      response.strengths.toLowerCase().includes(search) ||
-      response.improvements.toLowerCase().includes(search);
+    const searchTarget = [
+      response.clientName,
+      response.strengths,
+      response.improvements,
+      response.otherComments,
+    ]
+      .join(" ")
+      .toLowerCase();
+    const searchMatch = !search || searchTarget.includes(search);
 
     return advisorMatch && segmentMatch && searchMatch;
   });
@@ -429,9 +608,9 @@ function renderAll() {
 function renderHeroMetrics() {
   const metrics = computeMetrics(state.responses);
   elements.heroMetrics.innerHTML = [
-    createMetricCard("NPS atual", formatSigned(metrics.nps), `${metrics.promoters}% promotores`),
+    createMetricCard("CSAT geral", `${metrics.csat}%`, `${metrics.satisfiedAnswers}% de respostas 4 ou 5`),
+    createMetricCard("NPS relacional", formatSigned(metrics.nps), `${metrics.promoters}% promotores`),
     createMetricCard("Respostas", String(metrics.total), "Base local da pesquisa"),
-    createMetricCard("Pilar médio", metrics.averagePillar.toFixed(1), "Escala de 1 a 5"),
   ].join("");
 }
 
@@ -440,10 +619,10 @@ function renderDashboard() {
   const metrics = computeMetrics(filtered);
 
   elements.dashboardMetrics.innerHTML = [
+    createMetricCard("CSAT geral", `${metrics.csat}%`, `${metrics.satisfiedAnswers}% de avaliações satisfeitas`),
+    createMetricCard("Média CSAT", metrics.averageCsat.toFixed(1), "Escala de 1 a 5"),
     createMetricCard("NPS", formatSigned(metrics.nps), `${metrics.promoters}% promotores | ${metrics.detractors}% detratores`),
     createMetricCard("Base ativa", String(metrics.total), "Respostas filtradas"),
-    createMetricCard("Nota média", metrics.averageScore.toFixed(1), "Escala NPS de 0 a 10"),
-    createMetricCard("Pilar médio", metrics.averagePillar.toFixed(1), "Média das quatro dimensões"),
   ].join("");
 
   elements.npsSummary.textContent = `${metrics.total} resposta${metrics.total === 1 ? "" : "s"}`;
@@ -468,33 +647,49 @@ function createMetricCard(label, value, caption) {
 
 function computeMetrics(responses) {
   const total = responses.length;
-  const promotersCount = responses.filter((response) => response.score >= 9).length;
-  const detractorsCount = responses.filter((response) => response.score <= 6).length;
-  const averageScore = total ? responses.reduce((sum, response) => sum + response.score, 0) / total : 0;
-  const averagePillar = total
-    ? responses.reduce((sum, response) => sum + averageResponsePillar(response), 0) / total
-    : 0;
+  const allAnswers = responses.flatMap((response) => getCsatValues(response));
+  const satisfiedAnswersCount = allAnswers.filter((value) => value >= 4).length;
+  const averageCsat = allAnswers.length ? allAnswers.reduce((sum, value) => sum + value, 0) / allAnswers.length : 0;
+  const promotersCount = responses.filter((response) => response.npsScore >= 9).length;
+  const detractorsCount = responses.filter((response) => response.npsScore <= 6).length;
   const promoters = total ? Math.round((promotersCount / total) * 100) : 0;
   const detractors = total ? Math.round((detractorsCount / total) * 100) : 0;
 
   return {
     total,
+    csat: allAnswers.length ? Math.round((satisfiedAnswersCount / allAnswers.length) * 100) : 0,
+    satisfiedAnswers: allAnswers.length ? Math.round((satisfiedAnswersCount / allAnswers.length) * 100) : 0,
+    averageCsat,
     promoters,
     detractors,
     nps: promoters - detractors,
-    averageScore,
-    averagePillar,
   };
 }
 
-function averageResponsePillar(response) {
-  return (response.service + response.strategy + response.communication + response.trust) / 4;
+function getCsatValues(response) {
+  return csatQuestions
+    .map((question) => Number(response.csatAnswers?.[question.id]))
+    .filter((value) => Number.isFinite(value) && value > 0);
+}
+
+function averageResponseCsat(response) {
+  const values = getCsatValues(response);
+  return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 0;
+}
+
+function responseCsatPercent(response) {
+  const values = getCsatValues(response);
+  if (!values.length) {
+    return 0;
+  }
+
+  return Math.round((values.filter((value) => value >= 4).length / values.length) * 100);
 }
 
 function renderScoreChart(responses) {
   const counts = Array.from({ length: 11 }, () => 0);
   responses.forEach((response) => {
-    counts[response.score] += 1;
+    counts[response.npsScore] += 1;
   });
 
   const max = Math.max(...counts, 1);
@@ -517,22 +712,19 @@ function renderScoreChart(responses) {
 }
 
 function renderPillarChart(responses) {
-  const keys = [
-    ["Atendimento", "service"],
-    ["Estratégia", "strategy"],
-    ["Comunicação", "communication"],
-    ["Confiança", "trust"],
-  ];
-
-  const markup = keys
-    .map(([label, key]) => {
-      const average = responses.length
-        ? responses.reduce((sum, response) => sum + Number(response[key]), 0) / responses.length
-        : 0;
+  const markup = pillarOrder
+    .map((pillar) => {
+      const pillarQuestions = csatQuestions.filter((question) => question.pillar === pillar.key);
+      const values = responses.flatMap((response) =>
+        pillarQuestions
+          .map((question) => Number(response.csatAnswers?.[question.id]))
+          .filter((value) => Number.isFinite(value) && value > 0)
+      );
+      const average = values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 0;
       const percent = (average / 5) * 100;
       return `
         <div class="pillar-row">
-          <span>${label}</span>
+          <span>${pillar.label}</span>
           <div class="pillar-track">
             <div class="pillar-fill" style="width:${percent}%"></div>
           </div>
@@ -558,19 +750,19 @@ function renderTrendChart(responses) {
     if (!grouped[key]) {
       grouped[key] = [];
     }
-    grouped[key].push(response.score);
+    grouped[key].push(response);
   });
 
   const entries = Object.entries(grouped)
     .sort(([a], [b]) => a.localeCompare(b))
     .slice(-6)
-    .map(([month, scores]) => ({
+    .map(([month, monthResponses]) => ({
       month,
       label: new Date(`${month}-01T12:00:00`).toLocaleDateString("pt-BR", {
         month: "short",
         year: "2-digit",
       }),
-      average: scores.reduce((sum, score) => sum + score, 0) / scores.length,
+      csat: computeMetrics(monthResponses).csat,
     }));
 
   const width = 760;
@@ -583,7 +775,7 @@ function renderTrendChart(responses) {
 
   const points = entries.map((entry, index) => {
     const x = paddingX + (usableWidth / steps) * index;
-    const y = paddingY + usableHeight - (entry.average / 10) * usableHeight;
+    const y = paddingY + usableHeight - (entry.csat / 100) * usableHeight;
     return { ...entry, x, y };
   });
 
@@ -595,8 +787,8 @@ function renderTrendChart(responses) {
   } ${(height - paddingY).toFixed(1)} Z`;
 
   const gridLines = Array.from({ length: 5 }, (_, index) => {
-    const value = index * 2.5;
-    const y = paddingY + usableHeight - (value / 10) * usableHeight;
+    const value = index * 25;
+    const y = paddingY + usableHeight - (value / 100) * usableHeight;
     return `<line class="trend-grid-line" x1="${paddingX}" x2="${width - paddingX}" y1="${y}" y2="${y}" />`;
   }).join("");
 
@@ -610,7 +802,7 @@ function renderTrendChart(responses) {
     .join("");
 
   elements.trendChart.innerHTML = `
-    <svg class="trend-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Evolução mensal das notas">
+    <svg class="trend-svg" viewBox="0 0 ${width} ${height}" role="img" aria-label="Evolução mensal do CSAT">
       ${gridLines}
       <path class="trend-area" d="${areaPath}"></path>
       <path class="trend-line" d="${linePath}"></path>
@@ -621,34 +813,37 @@ function renderTrendChart(responses) {
 
 function renderInsights(responses, metrics) {
   if (!responses.length) {
-    elements.insightsPanel.innerHTML = `<div class="insight-chip"><strong>Sem dados</strong><span>As respostas aparecerão aqui assim que a pesquisa começar a ser usada.</span></div>`;
+    elements.insightsPanel.innerHTML =
+      `<div class="insight-chip"><strong>Sem dados</strong><span>As respostas aparecerão aqui assim que a pesquisa começar a ser usada.</span></div>`;
     return;
   }
 
   const comments = responses
-    .flatMap((response) => [response.strengths, response.improvements])
+    .flatMap((response) => [response.strengths, response.improvements, response.otherComments])
     .join(" ")
     .toLowerCase();
 
   const signals = [
     {
+      label: "Leitura CSAT",
+      text:
+        metrics.csat >= 85
+          ? "A satisfação consolidada está forte, com predominância de avaliações 4 e 5 nos atributos medidos."
+          : "O CSAT mostra espaço para elevar consistência operacional e percepção de valor em pontos críticos.",
+    },
+    {
       label: "Força percebida",
-      text: comments.includes("segurança") || comments.includes("confiança")
-        ? "Confiança e segurança aparecem como ativos centrais da relação com a MZM Wealth."
-        : "Os comentários positivos reforçam a proposta consultiva e a proximidade no atendimento.",
+      text:
+        comments.includes("segurança") || comments.includes("confiança")
+          ? "Confiança e segurança seguem aparecendo como ativos centrais da relação com a MZM Wealth."
+          : "Os comentários positivos reforçam a proposta consultiva e a proximidade no atendimento.",
     },
     {
       label: "Ponto de atenção",
-      text: comments.includes("prazo") || comments.includes("tempo")
-        ? "Há indício de oportunidade em previsibilidade de prazos e velocidade de retorno."
-        : "Vale acompanhar ritmo de comunicação e profundidade do acompanhamento recorrente.",
-    },
-    {
-      label: "Leitura executiva",
       text:
-        metrics.nps >= 50
-          ? "A base atual indica uma experiência forte, com espaço para refinar rituais de comunicação."
-          : "A experiência é positiva, mas pede ações mais consistentes para elevar a taxa de promotores.",
+        comments.includes("prazo") || comments.includes("tempo") || comments.includes("retorno")
+          ? "Há sinal claro para acompanhar prazos, velocidade de retorno e previsibilidade do fluxo operacional."
+          : "Vale monitorar ritmo de comunicação, frequência de acompanhamento e clareza da jornada consultiva.",
     },
   ];
 
@@ -677,14 +872,14 @@ function renderResponsesTable(responses) {
   elements.responsesTable.innerHTML = responses
     .slice(0, 8)
     .map((response) => {
-      const comment = response.improvements || response.strengths || "Sem comentário";
+      const comment = response.improvements || response.otherComments || response.strengths || "Sem comentário";
       return `
         <tr>
           <td>${escapeHtml(response.clientName)}</td>
           <td>${escapeHtml(response.advisor)}</td>
           <td>${escapeHtml(response.segment)}</td>
-          <td>${response.score}</td>
-          <td>${averageResponsePillar(response).toFixed(1)}</td>
+          <td>${responseCsatPercent(response)}%</td>
+          <td>${response.npsScore}</td>
           <td>${escapeHtml(comment)}</td>
         </tr>
       `;
@@ -693,7 +888,7 @@ function renderResponsesTable(responses) {
 }
 
 function exportJson() {
-  downloadFile("mzm-wealth-nps.json", JSON.stringify(state.responses, null, 2), "application/json");
+  downloadFile("mzm-wealth-csat.json", JSON.stringify(state.responses, null, 2), "application/json");
 }
 
 function exportCsv() {
@@ -703,13 +898,11 @@ function exportCsv() {
     "clientEmail",
     "advisor",
     "segment",
-    "score",
-    "service",
-    "strategy",
-    "communication",
-    "trust",
+    "npsScore",
+    ...csatQuestions.map((question) => question.id),
     "strengths",
     "improvements",
+    "otherComments",
     "journeyStage",
     "allowContact",
   ];
@@ -718,7 +911,8 @@ function exportCsv() {
     state.responses.map((response) =>
       header
         .map((field) => {
-          const value = response[field] ?? "";
+          const value =
+            field in response ? response[field] : response.csatAnswers?.[field] ?? "";
           const safe = String(value).replace(/"/g, '""');
           return `"${safe}"`;
         })
@@ -726,7 +920,7 @@ function exportCsv() {
     )
   );
 
-  downloadFile("mzm-wealth-nps.csv", lines.join("\n"), "text/csv;charset=utf-8");
+  downloadFile("mzm-wealth-csat.csv", lines.join("\n"), "text/csv;charset=utf-8");
 }
 
 function downloadFile(filename, content, type) {
