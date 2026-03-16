@@ -311,12 +311,10 @@ Preencha os dados do convite para gerar uma mensagem personalizada.
                 </label>
 
                 <label>
-                  Qual é o momento da sua jornada conosco?
+                  Qual é o modelo da sua jornada conosco?
                   <select name="journeyStage">
                     <option value="onboarding">Onboarding recente</option>
                     <option value="relacionamento">Relacionamento recorrente</option>
-                    <option value="planejamento">Projeto de planejamento</option>
-                    <option value="sucessao">Estruturação sucessória</option>
                   </select>
                 </label>
 
@@ -325,8 +323,15 @@ Preencha os dados do convite para gerar uma mensagem personalizada.
                   Autorizo contato da equipe para aprofundar meu feedback, se necessário.
                 </label>
 
-                <button type="submit" class="button button-primary button-full">Enviar resposta</button>
+                <div class="survey-submit-wrap" id="survey-submit-wrap">
+                  <button type="submit" class="button button-primary button-full">Enviar resposta</button>
+                </div>
               </form>
+
+              <div class="survey-preview-note hidden" id="survey-preview-note">
+                Este bloco mostra o modelo da pesquisa que o cliente irá receber. O envio da resposta fica disponível
+                apenas no link individual compartilhado com cada cliente.
+              </div>
 
               <div class="success-state hidden" id="survey-success">
                 <h2>Resposta recebida com sucesso.</h2>

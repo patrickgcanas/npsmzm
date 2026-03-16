@@ -269,6 +269,8 @@ const elements = {
   surveyContext: document.getElementById("survey-context"),
   surveyIntro: document.getElementById("survey-intro"),
   csatQuestions: document.getElementById("csat-questions"),
+  surveySubmitWrap: document.getElementById("survey-submit-wrap"),
+  surveyPreviewNote: document.getElementById("survey-preview-note"),
 };
 
 document.addEventListener("DOMContentLoaded", init);
@@ -502,6 +504,7 @@ function hydrateSurveyFromUrl() {
   const client = params.get("client");
   const advisor = params.get("advisor");
   const email = params.get("email");
+  const hasInviteContext = Boolean(client && advisor);
 
   const pills = [];
   if (client) pills.push(`Cliente: ${client}`);
@@ -523,6 +526,13 @@ function hydrateSurveyFromUrl() {
 
   elements.surveyForm.dataset.client = client || "";
   elements.surveyForm.dataset.advisor = advisor || "";
+  elements.surveySubmitWrap.classList.toggle("hidden", !hasInviteContext);
+  elements.surveyPreviewNote.classList.toggle("hidden", hasInviteContext);
+
+  if (!hasInviteContext) {
+    elements.surveyForm.classList.remove("hidden");
+    elements.surveySuccess.classList.add("hidden");
+  }
 }
 
 function submitSurvey(event) {
