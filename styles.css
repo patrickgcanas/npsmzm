@@ -461,16 +461,42 @@ td {
 
 .elos-intro {
   max-width: 78ch;
+  margin-bottom: 0;
 }
 
 .manifesto-card {
-  margin-top: 24px;
-  padding: 22px 24px;
-  border-radius: 24px;
+  position: relative;
+  overflow: hidden;
+  margin-top: 28px;
+  padding: 28px 30px 30px;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 248, 239, 0.08);
   background:
     linear-gradient(135deg, rgba(22, 54, 51, 0.94), rgba(13, 41, 38, 0.9)),
     rgba(13, 41, 38, 0.92);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 28px 56px rgba(12, 31, 29, 0.18);
+}
+
+.manifesto-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 248, 239, 0.3), transparent 72%);
+}
+
+.manifesto-card::after {
+  content: "";
+  position: absolute;
+  inset: auto -10% -35% auto;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(183, 143, 82, 0.24), transparent 68%);
+  pointer-events: none;
 }
 
 .manifesto-card .section-label {
@@ -487,13 +513,23 @@ td {
 .manifesto-lead {
   margin-top: 18px;
   font-family: var(--font-display);
-  font-size: clamp(1.18rem, 1.8vw, 1.5rem);
+  max-width: 34ch;
+  font-size: clamp(1.24rem, 1.9vw, 1.62rem);
   line-height: 1.65;
+  letter-spacing: -0.01em;
+}
+
+.manifesto-columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 24px;
+  margin-top: 22px;
 }
 
 .manifesto-body {
-  margin-top: 14px;
-  max-width: 78ch;
+  margin-top: 0;
+  padding-top: 18px;
+  border-top: 1px solid rgba(255, 248, 239, 0.12);
   font-size: 1rem;
 }
 
@@ -998,6 +1034,7 @@ td {
   .split-layout,
   .advisor-layout,
   .elos-grid,
+  .manifesto-columns,
   .send-layout,
   .survey-layout,
   .dashboard-grid,
@@ -1068,5 +1105,9 @@ td {
 
   .hero-copy h1 {
     font-size: 1.42rem;
+  }
+
+  .manifesto-card {
+    padding: 24px 22px 24px;
   }
 }
