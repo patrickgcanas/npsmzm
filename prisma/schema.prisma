@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model SurveyInvite {
+  id               String          @id @default(cuid())
+  token            String          @unique
+  clientName       String
+  clientEmail      String?
+  advisor          String
+  relationshipNote String?
+  createdAt        DateTime        @default(now())
+  response         SurveyResponse?
+}
+
+model SurveyResponse {
+  id                String       @id @default(cuid())
+  inviteId          String       @unique
+  invite            SurveyInvite @relation(fields: [inviteId], references: [id], onDelete: Cascade)
+  createdAt         DateTime     @default(now())
+  npsScore          Int
+  journeyStage      String
+  strengths         String       @default("")
+  improvements      String       @default("")
+  otherComments     String       @default("")
+  contactEase       Int
+  reportClarity     Int
+  modelTransparency Int
+  responseTime      Int
+  planningFit       Int
+  interestAlignment Int
+  meetingFrequency  Int
+  solutionsSupport  Int
+  meetingClarity    Int
+  engagement        Int
+  advisorRelevance  Int
+}
