@@ -1,12 +1,15 @@
-const STORAGE_KEY = "mzm-wealth-csat-responses-v2";
+﻿const STORAGE_KEY = "mzm-wealth-csat-responses-v2";
 const DEFAULT_VIEW = "home";
 const views = ["home", "send", "survey", "dashboard"];
-const advisors = ["Marcelo Zamboni", "Maria Silva", "Equipe Wealth Planning"];
-const segments = [
-  "Multi Family Office",
-  "Planejamento Patrimonial",
-  "Sucessão & Governança",
-  "Empresários",
+const advisors = [
+  "Daniel Mazza",
+  "Fabio Marques",
+  "Mauro Cervellini",
+  "Eduardo Zilli",
+  "Patrick Cañas",
+  "Renato Ormeni",
+  "Emanuel Troya",
+  "Carla Gonzalez",
 ];
 
 const csatQuestions = [
@@ -112,8 +115,7 @@ const demoResponses = [
     createdAt: "2026-01-18T14:30:00-03:00",
     clientName: "Família Andrade",
     clientEmail: "andrade@example.com",
-    advisor: "Marcelo Zamboni",
-    segment: "Multi Family Office",
+    advisor: "Daniel Mazza",
     npsScore: 10,
     csatAnswers: {
       contactEase: 5,
@@ -139,8 +141,7 @@ const demoResponses = [
     createdAt: "2026-01-27T10:10:00-03:00",
     clientName: "Carlos e Helena Nunes",
     clientEmail: "nunes@example.com",
-    advisor: "Maria Silva",
-    segment: "Planejamento Patrimonial",
+    advisor: "Fabio Marques",
     npsScore: 8,
     csatAnswers: {
       contactEase: 4,
@@ -166,8 +167,7 @@ const demoResponses = [
     createdAt: "2026-02-09T16:20:00-03:00",
     clientName: "Grupo Ferraz",
     clientEmail: "ferraz@example.com",
-    advisor: "Marcelo Zamboni",
-    segment: "Empresários",
+    advisor: "Patrick Cañas",
     npsScore: 9,
     csatAnswers: {
       contactEase: 5,
@@ -193,8 +193,7 @@ const demoResponses = [
     createdAt: "2026-02-21T11:45:00-03:00",
     clientName: "Renata Albuquerque",
     clientEmail: "renata@example.com",
-    advisor: "Equipe Wealth Planning",
-    segment: "Sucessão & Governança",
+    advisor: "Renato Ormeni",
     npsScore: 6,
     csatAnswers: {
       contactEase: 3,
@@ -220,8 +219,7 @@ const demoResponses = [
     createdAt: "2026-03-03T09:15:00-03:00",
     clientName: "Família Pires",
     clientEmail: "pires@example.com",
-    advisor: "Maria Silva",
-    segment: "Multi Family Office",
+    advisor: "Carla Gonzalez",
     npsScore: 10,
     csatAnswers: {
       contactEase: 5,
@@ -260,7 +258,6 @@ const elements = {
   npsSummary: document.getElementById("nps-summary"),
   lastUpdated: document.getElementById("last-updated"),
   filterAdvisor: document.getElementById("filter-advisor"),
-  filterSegment: document.getElementById("filter-segment"),
   filterSearch: document.getElementById("filter-search"),
   inviteForm: document.getElementById("invite-form"),
   inviteStatus: document.getElementById("invite-status"),
@@ -352,7 +349,6 @@ function bindActions() {
   document.getElementById("new-response").addEventListener("click", resetSurvey);
 
   elements.filterAdvisor.addEventListener("change", renderAll);
-  elements.filterSegment.addEventListener("change", renderAll);
   elements.filterSearch.addEventListener("input", renderAll);
 
   elements.surveyForm.addEventListener("submit", submitSurvey);
@@ -384,10 +380,6 @@ function setView(view, pushState = true) {
 function populateFilterOptions() {
   advisors.forEach((advisor) => {
     elements.filterAdvisor.add(new Option(advisor, advisor));
-  });
-
-  segments.forEach((segment) => {
-    elements.filterSegment.add(new Option(segment, segment));
   });
 }
 
@@ -438,7 +430,6 @@ function generateInvite() {
   const clientName = (formData.get("clientName") || "").toString().trim();
   const clientEmail = (formData.get("clientEmail") || "").toString().trim();
   const advisor = (formData.get("advisor") || advisors[0]).toString();
-  const segment = (formData.get("segment") || segments[0]).toString();
   const relationshipNote = (formData.get("relationshipNote") || "").toString().trim();
 
   if (!clientName) {
@@ -451,7 +442,6 @@ function generateInvite() {
   url.searchParams.set("view", "survey");
   url.searchParams.set("client", clientName);
   url.searchParams.set("advisor", advisor);
-  url.searchParams.set("segment", segment);
 
   if (clientEmail) {
     url.searchParams.set("email", clientEmail);
@@ -511,13 +501,11 @@ function hydrateSurveyFromUrl() {
   const params = new URLSearchParams(window.location.search);
   const client = params.get("client");
   const advisor = params.get("advisor");
-  const segment = params.get("segment");
   const email = params.get("email");
 
   const pills = [];
   if (client) pills.push(`Cliente: ${client}`);
   if (advisor) pills.push(`Advisor: ${advisor}`);
-  if (segment) pills.push(`Segmento: ${segment}`);
 
   elements.surveyContext.innerHTML = pills.length
     ? pills.map((pill) => `<span class="context-pill">${escapeHtml(pill)}</span>`).join("")
@@ -535,7 +523,6 @@ function hydrateSurveyFromUrl() {
 
   elements.surveyForm.dataset.client = client || "";
   elements.surveyForm.dataset.advisor = advisor || "";
-  elements.surveyForm.dataset.segment = segment || "";
 }
 
 function submitSurvey(event) {
@@ -553,7 +540,6 @@ function submitSurvey(event) {
     clientName: elements.surveyForm.dataset.client || "Cliente sem identificação",
     clientEmail: elements.surveyForm.dataset.email || "",
     advisor: elements.surveyForm.dataset.advisor || "Não informado",
-    segment: elements.surveyForm.dataset.segment || "Não informado",
     npsScore: Number(formData.get("npsScore")),
     csatAnswers,
     strengths: (formData.get("strengths") || "").toString().trim(),
@@ -580,12 +566,10 @@ function resetSurvey() {
 
 function getFilteredResponses() {
   const advisor = elements.filterAdvisor.value;
-  const segment = elements.filterSegment.value;
   const search = elements.filterSearch.value.trim().toLowerCase();
 
   return state.responses.filter((response) => {
     const advisorMatch = advisor === "all" || response.advisor === advisor;
-    const segmentMatch = segment === "all" || response.segment === segment;
     const searchTarget = [
       response.clientName,
       response.strengths,
@@ -596,7 +580,7 @@ function getFilteredResponses() {
       .toLowerCase();
     const searchMatch = !search || searchTarget.includes(search);
 
-    return advisorMatch && segmentMatch && searchMatch;
+    return advisorMatch && searchMatch;
   });
 }
 
@@ -670,11 +654,6 @@ function getCsatValues(response) {
   return csatQuestions
     .map((question) => Number(response.csatAnswers?.[question.id]))
     .filter((value) => Number.isFinite(value) && value > 0);
-}
-
-function averageResponseCsat(response) {
-  const values = getCsatValues(response);
-  return values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 0;
 }
 
 function responseCsatPercent(response) {
@@ -863,7 +842,7 @@ function renderResponsesTable(responses) {
   if (!responses.length) {
     elements.responsesTable.innerHTML = `
       <tr>
-        <td colspan="6" class="muted">Nenhuma resposta encontrada para os filtros aplicados.</td>
+        <td colspan="5" class="muted">Nenhuma resposta encontrada para os filtros aplicados.</td>
       </tr>
     `;
     return;
@@ -877,7 +856,6 @@ function renderResponsesTable(responses) {
         <tr>
           <td>${escapeHtml(response.clientName)}</td>
           <td>${escapeHtml(response.advisor)}</td>
-          <td>${escapeHtml(response.segment)}</td>
           <td>${responseCsatPercent(response)}%</td>
           <td>${response.npsScore}</td>
           <td>${escapeHtml(comment)}</td>
@@ -897,7 +875,6 @@ function exportCsv() {
     "clientName",
     "clientEmail",
     "advisor",
-    "segment",
     "npsScore",
     ...csatQuestions.map((question) => question.id),
     "strengths",
@@ -911,8 +888,7 @@ function exportCsv() {
     state.responses.map((response) =>
       header
         .map((field) => {
-          const value =
-            field in response ? response[field] : response.csatAnswers?.[field] ?? "";
+          const value = field in response ? response[field] : response.csatAnswers?.[field] ?? "";
           const safe = String(value).replace(/"/g, '""');
           return `"${safe}"`;
         })
@@ -944,6 +920,7 @@ function escapeHtml(value) {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
+    .replace(/\"/g, "&quot;")
     .replace(/'/g, "&#39;");
 }
+
