@@ -69,7 +69,7 @@ export function SendInviteForm() {
 
     try {
       await navigator.clipboard.writeText(value);
-    } catch (error) {
+    } catch {
       const temp = document.createElement("textarea");
       temp.value = value;
       document.body.appendChild(temp);

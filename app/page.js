@@ -65,19 +65,31 @@ export default async function HomePage() {
           <div className="guide-steps">
             <div className="guide-step">
               <strong>1. Acesse a central de envio</strong>
-              <p>Cadastre o cliente, selecione o advisor responsável e registre o contexto que ajuda a personalizar o convite.</p>
+              <p>
+                Cadastre o cliente, selecione o advisor responsável e registre o contexto que ajuda a personalizar o
+                convite.
+              </p>
             </div>
             <div className="guide-step">
               <strong>2. Gere o link dinâmico</strong>
-              <p>O sistema cria um token exclusivo para cada cliente, com rastreabilidade da resposta e um link pronto para compartilhamento.</p>
+              <p>
+                O sistema cria um token exclusivo para cada cliente, com rastreabilidade da resposta e um link pronto
+                para compartilhamento.
+              </p>
             </div>
             <div className="guide-step">
               <strong>3. Compartilhe no melhor momento</strong>
-              <p>Use o convite em marcos relevantes da relação, como revisões estratégicas, entregas importantes ou após uma reunião-chave.</p>
+              <p>
+                Use o convite em marcos relevantes da relação, como revisões estratégicas, entregas importantes ou
+                após uma reunião-chave.
+              </p>
             </div>
             <div className="guide-step">
               <strong>4. Feche o ciclo com ação</strong>
-              <p>O dashboard consolida CSAT, NPS e comentários para orientar retorno ao cliente, priorização comercial e melhoria contínua.</p>
+              <p>
+                O dashboard consolida CSAT, NPS e comentários para orientar retorno ao cliente, priorização comercial
+                e melhoria contínua.
+              </p>
             </div>
           </div>
         </article>
@@ -89,7 +101,10 @@ export default async function HomePage() {
             <li>Explique que a pesquisa é breve, personalizada e orientada a melhorar a experiência do cliente.</li>
             <li>Evite disparos em massa. O vínculo consultivo da MZM pede contexto, momento e relevância.</li>
             <li>Use a observação de relacionamento para tornar a mensagem mais aderente à jornada daquela família.</li>
-            <li>Ao receber um comentário importante, trate o retorno como oportunidade de fortalecer confiança e parceria.</li>
+            <li>
+              Ao receber um comentário importante, trate o retorno como oportunidade de fortalecer confiança e
+              parceria.
+            </li>
           </ul>
         </article>
       </section>
@@ -106,15 +121,24 @@ export default async function HomePage() {
         <div className="elos-grid">
           <article className="elo-card">
             <strong>Fidúcia</strong>
-            <p>Representa a confiança como fundamento da relação. Para o consultor, é o compromisso de agir com responsabilidade, lealdade e coerência em cada recomendação.</p>
+            <p>
+              Representa a confiança como fundamento da relação. Para o consultor, é o compromisso de agir com
+              responsabilidade, lealdade e coerência em cada recomendação.
+            </p>
           </article>
           <article className="elo-card">
             <strong>Transparência</strong>
-            <p>Reforça a importância da clareza nas conversas, da franqueza nas orientações e da integridade nas decisões. Relações duradouras exigem compreensão mútua e comunicação sem ruído.</p>
+            <p>
+              Reforça a importância da clareza nas conversas, da franqueza nas orientações e da integridade nas
+              decisões. Relações duradouras exigem compreensão mútua e comunicação sem ruído.
+            </p>
           </article>
           <article className="elo-card">
             <strong>Fortuna</strong>
-            <p>Aponta para a construção de prosperidade com visão de futuro. Mais do que resultado financeiro, este Elo conecta patrimônio, propósito e legado das famílias atendidas pela MZM Wealth.</p>
+            <p>
+              Aponta para a construção de prosperidade com visão de futuro. Mais do que resultado financeiro, este Elo
+              conecta patrimônio, propósito e legado das famílias atendidas pela MZM Wealth.
+            </p>
           </article>
         </div>
 

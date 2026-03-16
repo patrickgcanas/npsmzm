@@ -13,13 +13,7 @@ export function SiteShell({ children }) {
     <div className="page-shell">
       <header className={`topbar${isPublicSurvey ? " topbar-minimal" : ""}`}>
         <Link className="brand" href="/">
-          <Image
-            alt="Logo da MZM Wealth"
-            className="brand-mark"
-            height={52}
-            src="/logo-mzm.png"
-            width={52}
-          />
+          <Image alt="Logo da MZM Wealth" className="brand-mark" height={52} src="/logo-mzm.png" width={52} />
           <div>
             <span className="brand-name">MZM Wealth</span>
             <span className="brand-tag">Pesquisa de Satisfação</span>
