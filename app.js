@@ -556,7 +556,7 @@ function submitSurvey(event) {
     improvements: (formData.get("improvements") || "").toString().trim(),
     otherComments: (formData.get("otherComments") || "").toString().trim(),
     journeyStage: (formData.get("journeyStage") || "").toString(),
-    allowContact: formData.get("allowContact") === "on",
+    allowContact: false,
   };
 
   state.responses = [response, ...state.responses];
