@@ -8,6 +8,7 @@ export async function POST(request) {
     const body = await request.json();
     const clientName = body.clientName?.trim();
     const clientEmail = body.clientEmail?.trim() || null;
+    const clientCode = body.clientCode?.trim() || null;
     const advisor = body.advisor?.trim();
     const relationshipNote = body.relationshipNote?.trim() || null;
 
@@ -25,6 +26,7 @@ export async function POST(request) {
         token,
         clientName,
         clientEmail,
+        clientCode,
         advisor,
         relationshipNote,
       },

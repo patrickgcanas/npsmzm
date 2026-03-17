@@ -19,10 +19,6 @@ export default async function HomePage() {
         <div className="hero-copy">
           <span className="eyebrow">Client Experience MZM Wealth</span>
           <h1>Client Experience MZM</h1>
-          <p className="hero-text">
-            A nova base do projeto já nasce com servidor, banco de dados e links dinâmicos para que a MZM Wealth
-            conduza a pesquisa de satisfação de forma real, escalável e com leitura executiva.
-          </p>
           <div className="hero-actions">
             <Link className="button button-primary" href="/send">
               Criar convites

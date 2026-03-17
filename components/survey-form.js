@@ -112,7 +112,7 @@ export function SurveyForm({ clientName, advisor, token, hasResponse = false, pr
 
         <section className="csat-block" aria-labelledby="csat-title">
           <div className="csat-header">
-            <h2 id="csat-title">Perguntas de satisfação (CSAT)</h2>
+            <h2 id="csat-title">Perguntas de satisfação</h2>
             <p>
               Para as perguntas 2 a 12, avalie seu nível de satisfação de 1 a 5, em que 1 = Muito insatisfeito(a) e
               5 = Muito satisfeito(a).
@@ -124,9 +124,6 @@ export function SurveyForm({ clientName, advisor, token, hasResponse = false, pr
               <article className="csat-card" key={question.id}>
                 <div className="question-meta">
                   <span className="question-number">{question.number}</span>
-                  <span className="pillar-pill">
-                    {question.pillar} · {question.pillarLabel}
-                  </span>
                 </div>
                 <p className="question-prompt">{question.prompt}</p>
                 <div className="csat-scale" role="radiogroup">

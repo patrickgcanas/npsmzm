@@ -13,6 +13,7 @@ model SurveyInvite {
   token            String          @unique
   clientName       String
   clientEmail      String?
+  clientCode       String?
   advisor          String
   relationshipNote String?
   createdAt        DateTime        @default(now())

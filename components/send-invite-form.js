@@ -6,6 +6,7 @@ import { advisors } from "@/lib/survey";
 const initialState = {
   clientName: "",
   clientEmail: "",
+  clientCode: "",
   advisor: advisors[0],
   relationshipNote: "",
 };
@@ -103,6 +104,16 @@ export function SendInviteForm() {
               placeholder="cliente@exemplo.com"
               type="email"
               value={form.clientEmail}
+            />
+          </label>
+
+          <label>
+            Sigla do cliente
+            <input
+              name="clientCode"
+              onChange={(event) => updateField("clientCode", event.target.value.replace(/[^A-Za-z0-9]/g, ""))}
+              placeholder="Ex.: ABC123"
+              value={form.clientCode}
             />
           </label>
 

@@ -24,6 +24,7 @@ export function SiteShell({ children }) {
           <nav className="topnav" aria-label="Navegação principal">
             <NavLink href="/">Visão Geral</NavLink>
             <NavLink href="/send">Enviar</NavLink>
+            <NavLink href="/status">Status</NavLink>
             <NavLink href="/survey-model">Modelo de Pesquisa</NavLink>
             <NavLink href="/dashboard">Dashboard</NavLink>
           </nav>
