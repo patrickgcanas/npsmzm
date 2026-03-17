@@ -71,11 +71,11 @@ export function PillarRadar({ pillars }) {
       })}
 
       {/* Labels */}
-      <text className="radar-label" textAnchor="middle" x={CX} y="22">
+      <text className="radar-label" textAnchor="middle" x={CX} y="14">
         Atendimento
       </text>
-      <text className="radar-label" textAnchor="middle" x={CX} y="26">
-        <tspan dy="0" fontSize="10">{naAvg.toFixed(1)}</tspan>
+      <text className="radar-label-value" textAnchor="middle" x={CX} y="27">
+        {naAvg.toFixed(1)}
       </text>
       <text className="radar-label" textAnchor="start" x={axisEndNS.x + 6} y={axisEndNS.y + 5}>
         Serviço
