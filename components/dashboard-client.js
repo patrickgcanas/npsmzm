@@ -9,7 +9,7 @@ import {
   getTrendData,
   responseCsatPercent,
 } from "@/lib/analytics";
-import { advisors } from "@/lib/survey";
+import { advisors, csatQuestions } from "@/lib/survey";
 import { MetricCard } from "@/components/metric-card";
 
 function formatSigned(value) {
@@ -62,7 +62,7 @@ function TrendChart({ responses }) {
 
   const width = 760;
   const height = 260;
-  const paddingX = 42;
+  const paddingX = 62;
   const paddingY = 28;
   const usableWidth = width - paddingX * 2;
   const usableHeight = height - paddingY * 2;
@@ -81,18 +81,29 @@ function TrendChart({ responses }) {
     points[0].x
   } ${(height - paddingY).toFixed(1)} Z`;
 
+  const yTicks = [0, 25, 50, 75, 100];
+
   return (
     <svg className="trend-svg" role="img" viewBox={`0 0 ${width} ${height}`}>
-      {Array.from({ length: 5 }, (_, index) => {
-        const value = index * 25;
+      {yTicks.map((value) => {
         const y = paddingY + usableHeight - (value / 100) * usableHeight;
-        return <line className="trend-grid-line" key={value} x1={paddingX} x2={width - paddingX} y1={y} y2={y} />;
+        return (
+          <g key={value}>
+            <line className="trend-grid-line" x1={paddingX} x2={width - paddingX} y1={y} y2={y} />
+            <text className="trend-axis-label" textAnchor="end" x={paddingX - 8} y={y + 4}>
+              {value}%
+            </text>
+          </g>
+        );
       })}
       <path className="trend-area" d={areaPath} />
       <path className="trend-line" d={linePath} />
       {points.map((point) => (
         <g key={point.month}>
           <circle className="trend-point" cx={point.x} cy={point.y} r="6" />
+          <text className="trend-value-label" textAnchor="middle" x={point.x} y={point.y - 12}>
+            {point.csat}%
+          </text>
           <text className="trend-label" textAnchor="middle" x={point.x} y={height - 8}>
             {point.label}
           </text>
@@ -102,9 +113,70 @@ function TrendChart({ responses }) {
   );
 }
 
+function ScoreDot({ value }) {
+  return (
+    <div className="score-dots">
+      {[1, 2, 3, 4, 5].map((dot) => (
+        <span className={`score-dot${dot <= value ? " score-dot-filled" : ""}`} key={dot} />
+      ))}
+    </div>
+  );
+}
+
+function ResponseModal({ response, onClose }) {
+  if (!response) return null;
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-box" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-header">
+          <div>
+            <h2>{response.clientName}</h2>
+            <span className="modal-meta">
+              {response.advisor} · NPS {response.npsScore} · CSAT {responseCsatPercent(response)}%
+            </span>
+          </div>
+          <button className="modal-close" onClick={onClose}>✕</button>
+        </div>
+        <div className="modal-scores">
+          {csatQuestions.map((q) => (
+            <div className="modal-score-row" key={q.id}>
+              <span className="modal-score-label">{q.shortLabel}</span>
+              <ScoreDot value={response.csatAnswers?.[q.id]} />
+              <span className="modal-score-num">{response.csatAnswers?.[q.id] ?? "—"}</span>
+            </div>
+          ))}
+        </div>
+        {(response.strengths || response.improvements || response.otherComments) && (
+          <div className="modal-comments">
+            {response.strengths && (
+              <div className="modal-comment-block">
+                <strong>Pontos fortes</strong>
+                <p>{response.strengths}</p>
+              </div>
+            )}
+            {response.improvements && (
+              <div className="modal-comment-block">
+                <strong>Melhorias</strong>
+                <p>{response.improvements}</p>
+              </div>
+            )}
+            {response.otherComments && (
+              <div className="modal-comment-block">
+                <strong>Outros comentários</strong>
+                <p>{response.otherComments}</p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function DashboardClient({ initialResponses }) {
   const [advisor, setAdvisor] = useState("all");
   const [search, setSearch] = useState("");
+  const [selected, setSelected] = useState(null);
 
   const filtered = useMemo(() => {
     const normalizedSearch = search.trim().toLowerCase();
@@ -129,6 +201,7 @@ export function DashboardClient({ initialResponses }) {
 
   return (
     <>
+      <ResponseModal onClose={() => setSelected(null)} response={selected} />
       <section className="glass-card filters-card">
         <div className="filters-grid">
           <label>
@@ -241,7 +314,7 @@ export function DashboardClient({ initialResponses }) {
                     response.improvements || response.otherComments || response.strengths || "Sem comentário";
 
                   return (
-                    <tr key={response.id}>
+                    <tr className="table-row-clickable" key={response.id} onClick={() => setSelected(response)}>
                       <td>{response.clientName}</td>
                       <td>{response.advisor}</td>
                       <td>{responseCsatPercent(response)}%</td>

@@ -27,6 +27,7 @@ export function SiteShell({ children }) {
             <NavLink href="/status">Status</NavLink>
             <NavLink href="/survey-model">Modelo de Pesquisa</NavLink>
             <NavLink href="/dashboard">Dashboard</NavLink>
+            <NavLink href="/ranking">Ranking</NavLink>
           </nav>
         ) : (
           <div className="public-badge">Pesquisa do cliente</div>
