@@ -1,12 +1,22 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { csatQuestions, getEmptySurveyPayload, journeyOptions } from "@/lib/survey";
 
 export function SurveyForm({ clientName, advisor, token, hasResponse = false, preview = false }) {
   const [form, setForm] = useState(getEmptySurveyPayload());
   const [status, setStatus] = useState(hasResponse ? "submitted" : "idle");
   const [error, setError] = useState("");
+  const startedTracked = useRef(false);
+
+  useEffect(() => {
+    if (preview || !token || hasResponse) return;
+    fetch(`/api/invites/${token}/track`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ event: "viewed" }),
+    }).catch(() => {});
+  }, [token, preview, hasResponse]);
 
   const contextPills = useMemo(() => {
     if (preview) {
@@ -17,6 +27,14 @@ export function SurveyForm({ clientName, advisor, token, hasResponse = false, pr
   }, [advisor, clientName, preview]);
 
   function updateField(field, value) {
+    if (!preview && token && !startedTracked.current) {
+      startedTracked.current = true;
+      fetch(`/api/invites/${token}/track`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ event: "started" }),
+      }).catch(() => {});
+    }
     setForm((current) => ({
       ...current,
       [field]: value,

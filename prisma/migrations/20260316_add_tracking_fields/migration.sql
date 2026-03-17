@@ -1,0 +1,2 @@
+ALTER TABLE "SurveyInvite" ADD COLUMN "viewedAt" TIMESTAMP(3);
+ALTER TABLE "SurveyInvite" ADD COLUMN "startedAt" TIMESTAMP(3);

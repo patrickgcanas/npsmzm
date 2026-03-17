@@ -19,14 +19,18 @@ export function StatusClient({ initialInvites }) {
       const matchStatus =
         statusFilter === "all" ||
         (statusFilter === "responded" && invite.responded) ||
-        (statusFilter === "pending" && !invite.responded);
+        (statusFilter === "started" && !invite.responded && invite.startedAt) ||
+        (statusFilter === "viewed" && !invite.responded && !invite.startedAt && invite.viewedAt) ||
+        (statusFilter === "not_viewed" && !invite.responded && !invite.viewedAt);
       return matchSearch && matchAdvisor && matchStatus;
     });
   }, [initialInvites, search, advisorFilter, statusFilter]);
 
   const total = initialInvites.length;
   const responded = initialInvites.filter((i) => i.responded).length;
-  const pending = total - responded;
+  const started = initialInvites.filter((i) => !i.responded && i.startedAt).length;
+  const viewed = initialInvites.filter((i) => !i.responded && !i.startedAt && i.viewedAt).length;
+  const notViewed = initialInvites.filter((i) => !i.responded && !i.viewedAt).length;
 
   return (
     <>
@@ -40,8 +44,16 @@ export function StatusClient({ initialInvites }) {
           <span className="metric-value">{responded}</span>
         </div>
         <div className="metric-card" style={{ background: "rgba(255,255,255,0.55)", border: "1px solid rgba(22,54,51,0.1)", borderRadius: 20, padding: 18 }}>
-          <span className="metric-label">Pendentes</span>
-          <span className="metric-value">{pending}</span>
+          <span className="metric-label">Em preenchimento</span>
+          <span className="metric-value">{started}</span>
+        </div>
+        <div className="metric-card" style={{ background: "rgba(255,255,255,0.55)", border: "1px solid rgba(22,54,51,0.1)", borderRadius: 20, padding: 18 }}>
+          <span className="metric-label">Abriu o link</span>
+          <span className="metric-value">{viewed}</span>
+        </div>
+        <div className="metric-card" style={{ background: "rgba(255,255,255,0.55)", border: "1px solid rgba(22,54,51,0.1)", borderRadius: 20, padding: 18 }}>
+          <span className="metric-label">Não abriu</span>
+          <span className="metric-value">{notViewed}</span>
         </div>
       </section>
 
@@ -70,7 +82,9 @@ export function StatusClient({ initialInvites }) {
             <select onChange={(e) => setStatusFilter(e.target.value)} value={statusFilter}>
               <option value="all">Todos</option>
               <option value="responded">Respondida</option>
-              <option value="pending">Pendente</option>
+              <option value="started">Em preenchimento</option>
+              <option value="viewed">Abriu o link</option>
+              <option value="not_viewed">Não abriu</option>
             </select>
           </label>
         </div>
@@ -103,9 +117,13 @@ export function StatusClient({ initialInvites }) {
                     <td>{new Date(invite.createdAt).toLocaleDateString("pt-BR")}</td>
                     <td>
                       {invite.responded ? (
-                        <span className="status-badge">Respondida</span>
+                        <span className="status-badge status-responded">Respondida</span>
+                      ) : invite.startedAt ? (
+                        <span className="status-badge status-started">Em preenchimento</span>
+                      ) : invite.viewedAt ? (
+                        <span className="status-badge status-viewed">Abriu o link</span>
                       ) : (
-                        <span style={{ color: "var(--text-soft)", fontSize: "0.86rem" }}>Pendente</span>
+                        <span className="status-badge status-not-viewed">Não abriu</span>
                       )}
                     </td>
                   </tr>

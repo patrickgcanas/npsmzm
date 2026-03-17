@@ -17,6 +17,8 @@ model SurveyInvite {
   advisor          String
   relationshipNote String?
   createdAt        DateTime        @default(now())
+  viewedAt         DateTime?
+  startedAt        DateTime?
   response         SurveyResponse?
 }
 

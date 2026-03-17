@@ -178,6 +178,26 @@ a {
   color: var(--brand-strong);
 }
 
+.status-responded {
+  background: rgba(22, 54, 51, 0.12);
+  color: var(--brand-strong);
+}
+
+.status-started {
+  background: rgba(183, 143, 82, 0.2);
+  color: #7a5a1a;
+}
+
+.status-viewed {
+  background: rgba(59, 100, 180, 0.12);
+  color: #2c4fa0;
+}
+
+.status-not-viewed {
+  background: rgba(20, 37, 34, 0.07);
+  color: var(--text-soft);
+}
+
 .live-pill {
   background: rgba(255, 255, 255, 0.12);
   color: rgba(255, 255, 255, 0.84);
