@@ -1,19 +1,28 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { advisors } from "@/lib/survey";
 
 export function StatusClient({ initialInvites }) {
   const [search, setSearch] = useState("");
+  const [advisorFilter, setAdvisorFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
-    if (!term) return initialInvites;
-    return initialInvites.filter(
-      (invite) =>
+    return initialInvites.filter((invite) => {
+      const matchSearch =
+        !term ||
         invite.clientName.toLowerCase().includes(term) ||
-        invite.clientCode.toLowerCase().includes(term)
-    );
-  }, [initialInvites, search]);
+        (invite.clientCode || "").toLowerCase().includes(term);
+      const matchAdvisor = advisorFilter === "all" || invite.advisor === advisorFilter;
+      const matchStatus =
+        statusFilter === "all" ||
+        (statusFilter === "responded" && invite.responded) ||
+        (statusFilter === "pending" && !invite.responded);
+      return matchSearch && matchAdvisor && matchStatus;
+    });
+  }, [initialInvites, search, advisorFilter, statusFilter]);
 
   const total = initialInvites.length;
   const responded = initialInvites.filter((i) => i.responded).length;
@@ -37,7 +46,7 @@ export function StatusClient({ initialInvites }) {
       </section>
 
       <section className="glass-card filters-card">
-        <div className="filters-grid" style={{ gridTemplateColumns: "1fr" }}>
+        <div className="filters-grid">
           <label>
             Buscar cliente
             <input
@@ -46,6 +55,23 @@ export function StatusClient({ initialInvites }) {
               type="search"
               value={search}
             />
+          </label>
+          <label>
+            Advisor
+            <select onChange={(e) => setAdvisorFilter(e.target.value)} value={advisorFilter}>
+              <option value="all">Todos</option>
+              {advisors.map((name) => (
+                <option key={name} value={name}>{name}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Status
+            <select onChange={(e) => setStatusFilter(e.target.value)} value={statusFilter}>
+              <option value="all">Todos</option>
+              <option value="responded">Respondida</option>
+              <option value="pending">Pendente</option>
+            </select>
           </label>
         </div>
       </section>
