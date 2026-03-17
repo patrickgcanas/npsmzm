@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { MetricCard } from "@/components/metric-card";
-import { computeMetrics } from "@/lib/analytics";
+import { PillarRadar } from "@/components/pillar-radar";
+import { computeMetrics, getPillarAverages } from "@/lib/analytics";
 import { getHomeSummary } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
@@ -12,6 +13,7 @@ function formatSigned(value) {
 export default async function HomePage() {
   const responses = await getHomeSummary();
   const metrics = computeMetrics(responses);
+  const pillars = getPillarAverages(responses);
 
   return (
     <>
@@ -47,9 +49,8 @@ export default async function HomePage() {
             />
             <MetricCard caption="Base centralizada no banco" label="Respostas" value={String(metrics.total)} />
           </div>
-          <div className="hero-note">
-            Esta versão substitui o armazenamento local por persistência real em banco, pronta para evoluir com login,
-            automação de disparo e integração futura com CRM.
+          <div className="radar-wrap">
+            <PillarRadar pillars={pillars} />
           </div>
         </div>
       </section>

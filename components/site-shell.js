@@ -2,12 +2,37 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
-import { NavLink } from "@/components/nav-link";
+
+const navItems = [
+  { href: "/", label: "Início" },
+  { href: "/send", label: "Enviar" },
+  { href: "/status", label: "Status" },
+  { href: "/survey-model", label: "Modelo de Pesquisa" },
+  { href: "/dashboard", label: "Dashboard" },
+  { href: "/ranking", label: "Ranking" },
+];
 
 export function SiteShell({ children }) {
   const pathname = usePathname();
   const isPublicSurvey = pathname.startsWith("/survey/");
+  const [open, setOpen] = useState(false);
+  const navRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (navRef.current && !navRef.current.contains(e.target)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const currentLabel = navItems.find((item) =>
+    item.href === "/" ? pathname === "/" : pathname.startsWith(item.href)
+  )?.label ?? "Menu";
 
   return (
     <div className="page-shell">
@@ -21,13 +46,35 @@ export function SiteShell({ children }) {
         </Link>
 
         {!isPublicSurvey ? (
-          <nav className="topnav" aria-label="Navegação principal">
-            <NavLink href="/">Visão Geral</NavLink>
-            <NavLink href="/send">Enviar</NavLink>
-            <NavLink href="/status">Status</NavLink>
-            <NavLink href="/survey-model">Modelo de Pesquisa</NavLink>
-            <NavLink href="/dashboard">Dashboard</NavLink>
-            <NavLink href="/ranking">Ranking</NavLink>
+          <nav className="topnav" aria-label="Navegação principal" ref={navRef}>
+            <button
+              aria-expanded={open}
+              className={`nav-dropdown-btn${open ? " is-open" : ""}`}
+              onClick={() => setOpen((v) => !v)}
+            >
+              {currentLabel}
+              <svg className="nav-chevron" fill="none" height="14" stroke="currentColor" strokeWidth="2" viewBox="0 0 14 14" width="14">
+                <path d="M2 4.5l5 5 5-5" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </button>
+
+            {open && (
+              <div className="nav-dropdown-panel">
+                {navItems.map((item) => {
+                  const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+                  return (
+                    <Link
+                      className={`nav-dropdown-item${isActive ? " is-active" : ""}`}
+                      href={item.href}
+                      key={item.href}
+                      onClick={() => setOpen(false)}
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
           </nav>
         ) : (
           <div className="public-badge">Pesquisa do cliente</div>

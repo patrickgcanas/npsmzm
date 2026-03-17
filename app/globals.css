@@ -132,9 +132,72 @@ a {
 }
 
 .topnav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
+  position: relative;
+}
+
+.nav-dropdown-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(22, 54, 51, 0.16);
+  background: rgba(255, 255, 255, 0.8);
+  color: var(--brand-strong);
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.nav-dropdown-btn:hover,
+.nav-dropdown-btn.is-open {
+  background: white;
+  box-shadow: 0 4px 16px rgba(22, 54, 51, 0.1);
+}
+
+.nav-chevron {
+  transition: transform 180ms ease;
+  flex-shrink: 0;
+}
+
+.nav-dropdown-btn.is-open .nav-chevron {
+  transform: rotate(180deg);
+}
+
+.nav-dropdown-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 200px;
+  padding: 8px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  background: rgba(250, 247, 241, 0.96);
+  backdrop-filter: blur(18px);
+  box-shadow: var(--shadow);
+  z-index: 30;
+  display: grid;
+  gap: 2px;
+}
+
+.nav-dropdown-item {
+  display: block;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  color: var(--text-soft);
+  font-size: 0.95rem;
+  transition: background-color 120ms ease, color 120ms ease;
+}
+
+.nav-dropdown-item:hover {
+  background: rgba(22, 54, 51, 0.06);
+  color: var(--brand-strong);
+}
+
+.nav-dropdown-item.is-active {
+  background: rgba(22, 54, 51, 0.08);
+  color: var(--brand-strong);
+  font-weight: 600;
 }
 
 .nav-link {
@@ -1173,6 +1236,85 @@ textarea {
   font-style: italic;
   line-height: 1.6;
   color: var(--text);
+}
+
+.ranking-card-empty {
+  opacity: 0.6;
+}
+
+.ranking-comments {
+  display: grid;
+  gap: 10px;
+}
+
+.ranking-comment-positive {
+  background: rgba(22, 54, 51, 0.07);
+  border-color: rgba(22, 54, 51, 0.12);
+}
+
+.ranking-comment-positive .ranking-comment-label {
+  color: var(--brand);
+}
+
+.ranking-comment-negative {
+  background: rgba(140, 67, 58, 0.07);
+  border-color: rgba(140, 67, 58, 0.15);
+}
+
+.ranking-comment-negative .ranking-comment-label {
+  color: #8c433a;
+}
+
+.radar-wrap {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.radar-svg {
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+}
+
+.radar-ring {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.25);
+  stroke-width: 1;
+}
+
+.radar-axis {
+  stroke: rgba(255, 255, 255, 0.2);
+  stroke-width: 1;
+}
+
+.radar-fill {
+  fill: rgba(183, 143, 82, 0.35);
+}
+
+.radar-stroke {
+  fill: none;
+  stroke: rgba(183, 143, 82, 0.9);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.radar-point {
+  fill: white;
+  stroke: rgba(183, 143, 82, 0.9);
+  stroke-width: 2;
+}
+
+.radar-label {
+  fill: rgba(255, 255, 255, 0.85);
+  font-size: 11px;
+  font-family: var(--font-body);
+}
+
+.radar-label-value {
+  fill: rgba(255, 255, 255, 0.6);
+  font-size: 10px;
+  font-family: var(--font-body);
 }
 
 .insight-chip {

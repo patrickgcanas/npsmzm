@@ -62,7 +62,7 @@ function TrendChart({ responses }) {
 
   const width = 760;
   const height = 260;
-  const paddingX = 62;
+  const paddingX = 82;
   const paddingY = 28;
   const usableWidth = width - paddingX * 2;
   const usableHeight = height - paddingY * 2;
@@ -90,7 +90,7 @@ function TrendChart({ responses }) {
         return (
           <g key={value}>
             <line className="trend-grid-line" x1={paddingX} x2={width - paddingX} y1={y} y2={y} />
-            <text className="trend-axis-label" textAnchor="end" x={paddingX - 8} y={y + 4}>
+            <text className="trend-axis-label" textAnchor="end" x={paddingX - 14} y={y + 4}>
               {value}%
             </text>
           </g>

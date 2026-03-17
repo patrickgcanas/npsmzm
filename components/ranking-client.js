@@ -1,36 +1,41 @@
 "use client";
 
 import { useMemo } from "react";
-import { advisors, csatQuestions, pillarOrder } from "@/lib/survey";
-import { computeMetrics, getCsatValues, getPillarAverages, responseCsatPercent } from "@/lib/analytics";
+import { advisors, pillarOrder } from "@/lib/survey";
+import { computeMetrics, getPillarAverages } from "@/lib/analytics";
 
 function getAdvisorRanking(responses) {
-  return advisors
-    .map((name) => {
-      const advisorResponses = responses.filter((r) => r.advisor === name);
-      if (!advisorResponses.length) return null;
+  const ranked = advisors.map((name) => {
+    const advisorResponses = responses.filter((r) => r.advisor === name);
+    if (!advisorResponses.length) {
+      return { name, count: 0, csat: 0, nps: 0, averageCsat: 0, pillars: getPillarAverages([]), positiveComment: null, negativeComment: null };
+    }
 
-      const metrics = computeMetrics(advisorResponses);
-      const pillarAverages = getPillarAverages(advisorResponses);
-      const latestComment = advisorResponses
-        .map((r) => r.improvements || r.otherComments || r.strengths)
-        .find(Boolean);
+    const metrics = computeMetrics(advisorResponses);
+    const pillarAverages = getPillarAverages(advisorResponses);
+    const positiveComment = advisorResponses.map((r) => r.strengths).find(Boolean) || null;
+    const negativeComment = advisorResponses.map((r) => r.improvements).find(Boolean) || null;
 
-      return {
-        name,
-        count: advisorResponses.length,
-        csat: metrics.csat,
-        nps: metrics.nps,
-        averageCsat: metrics.averageCsat,
-        pillars: pillarAverages,
-        latestComment: latestComment || null,
-      };
-    })
-    .filter(Boolean)
-    .sort((a, b) => b.csat - a.csat);
+    return {
+      name,
+      count: advisorResponses.length,
+      csat: metrics.csat,
+      nps: metrics.nps,
+      averageCsat: metrics.averageCsat,
+      pillars: pillarAverages,
+      positiveComment,
+      negativeComment,
+    };
+  });
+
+  // Sort: advisors with responses first (by CSAT), then no-response ones alphabetically
+  const withData = ranked.filter((a) => a.count > 0).sort((a, b) => b.csat - a.csat);
+  const withoutData = ranked.filter((a) => a.count === 0);
+  return [...withData, ...withoutData];
 }
 
-function Medal({ rank }) {
+function Medal({ rank, hasData }) {
+  if (!hasData) return <span className="rank-position">—</span>;
   if (rank === 1) return <span className="rank-medal rank-gold">1°</span>;
   if (rank === 2) return <span className="rank-medal rank-silver">2°</span>;
   if (rank === 3) return <span className="rank-medal rank-bronze">3°</span>;
@@ -48,61 +53,77 @@ function NpsChip({ value }) {
 
 export function RankingClient({ initialResponses }) {
   const ranking = useMemo(() => getAdvisorRanking(initialResponses), [initialResponses]);
-
-  if (!ranking.length) {
-    return (
-      <div className="empty-state">
-        <p>Nenhuma resposta registrada ainda. O ranking aparecerá assim que as pesquisas forem respondidas.</p>
-      </div>
-    );
-  }
+  const rankedCount = ranking.filter((a) => a.count > 0).length;
 
   return (
     <div className="ranking-layout">
-      {ranking.map((advisor, index) => (
-        <article className="glass-card ranking-card" key={advisor.name}>
-          <div className="ranking-card-header">
-            <Medal rank={index + 1} />
-            <div className="ranking-name-block">
-              <strong>{advisor.name}</strong>
-              <span className="ranking-count">{advisor.count} {advisor.count === 1 ? "resposta" : "respostas"}</span>
-            </div>
-            <div className="ranking-scores">
-              <div className="ranking-score-item">
-                <span className="ranking-score-label">CSAT</span>
-                <span className="ranking-score-value">{advisor.csat}%</span>
-              </div>
-              <div className="ranking-score-item">
-                <span className="ranking-score-label">Média</span>
-                <span className="ranking-score-value">{advisor.averageCsat.toFixed(1)}</span>
-              </div>
-              <div className="ranking-score-item">
-                <span className="ranking-score-label">NPS</span>
-                <NpsChip value={advisor.nps} />
-              </div>
-            </div>
-          </div>
+      {ranking.map((advisor, index) => {
+        const hasData = advisor.count > 0;
+        const rank = hasData ? index + 1 : null;
 
-          <div className="ranking-pillars">
-            {advisor.pillars.map((pillar) => (
-              <div className="ranking-pillar-row" key={pillar.key}>
-                <span className="ranking-pillar-label">{pillar.label}</span>
-                <div className="pillar-track">
-                  <div className="pillar-fill" style={{ width: `${pillar.percent}%` }} />
+        return (
+          <article className={`glass-card ranking-card${!hasData ? " ranking-card-empty" : ""}`} key={advisor.name}>
+            <div className="ranking-card-header">
+              <Medal hasData={hasData} rank={rank} />
+              <div className="ranking-name-block">
+                <strong>{advisor.name}</strong>
+                <span className="ranking-count">
+                  {hasData ? `${advisor.count} ${advisor.count === 1 ? "resposta" : "respostas"}` : "Sem respostas ainda"}
+                </span>
+              </div>
+              {hasData && (
+                <div className="ranking-scores">
+                  <div className="ranking-score-item">
+                    <span className="ranking-score-label">CSAT</span>
+                    <span className="ranking-score-value">{advisor.csat}%</span>
+                  </div>
+                  <div className="ranking-score-item">
+                    <span className="ranking-score-label">Média</span>
+                    <span className="ranking-score-value">{advisor.averageCsat.toFixed(1)}</span>
+                  </div>
+                  <div className="ranking-score-item">
+                    <span className="ranking-score-label">NPS</span>
+                    <NpsChip value={advisor.nps} />
+                  </div>
                 </div>
-                <strong>{pillar.average.toFixed(1)}</strong>
-              </div>
-            ))}
-          </div>
-
-          {advisor.latestComment && (
-            <div className="ranking-comment">
-              <span className="ranking-comment-label">Último comentário</span>
-              <p>&ldquo;{advisor.latestComment}&rdquo;</p>
+              )}
             </div>
-          )}
-        </article>
-      ))}
+
+            {hasData && (
+              <>
+                <div className="ranking-pillars">
+                  {advisor.pillars.map((pillar) => (
+                    <div className="ranking-pillar-row" key={pillar.key}>
+                      <span className="ranking-pillar-label">{pillar.label}</span>
+                      <div className="pillar-track">
+                        <div className="pillar-fill" style={{ width: `${pillar.percent}%` }} />
+                      </div>
+                      <strong>{pillar.average.toFixed(1)}</strong>
+                    </div>
+                  ))}
+                </div>
+
+                {(advisor.positiveComment || advisor.negativeComment) && (
+                  <div className="ranking-comments">
+                    {advisor.positiveComment && (
+                      <div className="ranking-comment ranking-comment-positive">
+                        <span className="ranking-comment-label">Ponto forte</span>
+                        <p>&ldquo;{advisor.positiveComment}&rdquo;</p>
+                      </div>
+                    )}
+                    {advisor.negativeComment && (
+                      <div className="ranking-comment ranking-comment-negative">
+                        <span className="ranking-comment-label">Ponto de melhoria</span>
+                        <p>&ldquo;{advisor.negativeComment}&rdquo;</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </>
+            )}
+          </article>
+        );
+      })}
     </div>
   );
 }
