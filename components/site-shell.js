@@ -9,6 +9,7 @@ const navItems = [
   { href: "/", label: "Início" },
   { href: "/send", label: "Enviar" },
   { href: "/status", label: "Status" },
+  { href: "/import", label: "Importar / Exportar" },
   { href: "/survey-model", label: "Modelo de Pesquisa" },
   { href: "/dashboard", label: "Dashboard" },
   { href: "/ranking", label: "Ranking" },
