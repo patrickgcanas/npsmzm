@@ -98,7 +98,7 @@ export function RankingClient({ initialResponses }) {
           {advisor.latestComment && (
             <div className="ranking-comment">
               <span className="ranking-comment-label">Último comentário</span>
-              <p>"{advisor.latestComment}"</p>
+              <p>&ldquo;{advisor.latestComment}&rdquo;</p>
             </div>
           )}
         </article>
