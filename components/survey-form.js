@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { csatQuestions, getEmptySurveyPayload, journeyOptions } from "@/lib/survey";
+// journeyOptions kept for default value only — question no longer shown to client
 
 export function SurveyForm({ clientName, advisor, token, hasResponse = false, preview = false }) {
   const [form, setForm] = useState(getEmptySurveyPayload());
@@ -198,21 +199,6 @@ export function SurveyForm({ clientName, advisor, token, hasResponse = false, pr
             rows={4}
             value={form.otherComments}
           />
-        </label>
-
-        <label>
-          Qual é o modelo da sua jornada conosco?
-          <select
-            name="journeyStage"
-            onChange={(event) => updateField("journeyStage", event.target.value)}
-            value={form.journeyStage}
-          >
-            {journeyOptions.map((option) => (
-              <option key={option.value} value={option.value}>
-                {option.label}
-              </option>
-            ))}
-          </select>
         </label>
 
         {preview ? (

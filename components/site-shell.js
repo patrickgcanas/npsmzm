@@ -15,9 +15,15 @@ const navItems = [
   { href: "/ranking", label: "Ranking" },
 ];
 
+async function handleLogout() {
+  await fetch("/api/auth/logout", { method: "POST" });
+  window.location.href = "/login";
+}
+
 export function SiteShell({ children }) {
   const pathname = usePathname();
   const isPublicSurvey = pathname.startsWith("/survey/");
+  const isLogin = pathname === "/login";
   const [open, setOpen] = useState(false);
   const navRef = useRef(null);
 
@@ -34,6 +40,10 @@ export function SiteShell({ children }) {
   const currentLabel = navItems.find((item) =>
     item.href === "/" ? pathname === "/" : pathname.startsWith(item.href)
   )?.label ?? "Menu";
+
+  if (isLogin) {
+    return <>{children}</>;
+  }
 
   return (
     <div className="page-shell">
@@ -79,6 +89,12 @@ export function SiteShell({ children }) {
           </nav>
         ) : (
           <div className="public-badge">Pesquisa do cliente</div>
+        ) : null}
+
+        {!isPublicSurvey && (
+          <button className="logout-btn" onClick={handleLogout} type="button">
+            Sair
+          </button>
         )}
       </header>
 
