@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import Papa from "papaparse";
+import * as XLSX from "xlsx";
 
 // Colunas no formato exato do Salesforce
 const TEMPLATE_HEADERS = [
@@ -60,18 +61,39 @@ export function ImportClient() {
     setResult(null);
     setParseError("");
 
-    Papa.parse(file, {
-      header: true,
-      skipEmptyLines: true,
-      transformHeader: (h) => h.trim(),
-      complete: ({ data, errors }) => {
-        if (errors.length) {
-          setParseError("Erro ao ler o arquivo. Verifique se é um CSV válido.");
-          return;
+    const isExcel = /\.(xlsx|xls)$/i.test(file.name);
+
+    if (isExcel) {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        try {
+          const workbook = XLSX.read(new Uint8Array(ev.target.result), { type: "array" });
+          const sheet = workbook.Sheets[workbook.SheetNames[0]];
+          const data = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+          if (!data.length) {
+            setParseError("A planilha está vazia ou sem dados na primeira aba.");
+            return;
+          }
+          setRows(data.map(mapSalesforceRow));
+        } catch {
+          setParseError("Erro ao ler o arquivo Excel. Verifique se o arquivo não está corrompido.");
         }
-        setRows(data.map(mapSalesforceRow));
-      },
-    });
+      };
+      reader.readAsArrayBuffer(file);
+    } else {
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        transformHeader: (h) => h.trim(),
+        complete: ({ data, errors }) => {
+          if (errors.length) {
+            setParseError("Erro ao ler o arquivo. Verifique se é um CSV válido.");
+            return;
+          }
+          setRows(data.map(mapSalesforceRow));
+        },
+      });
+    }
   }
 
   async function handleImport() {
@@ -122,10 +144,10 @@ export function ImportClient() {
             <span className="import-step-num">2</span>
             <div>
               <strong>Suba o arquivo preenchido</strong>
-              <p>Colunas obrigatórias: <code>nome</code> e <code>advisor</code>.</p>
+              <p>Aceita <strong>.xlsx</strong> (Excel) ou <strong>.csv</strong>. Colunas obrigatórias: <code>Nome do Cliente</code> e <code>Advisor responsável</code>.</p>
               <label className="file-upload-label">
-                {fileName || "Selecionar arquivo .csv"}
-                <input accept=".csv" onChange={handleFile} ref={fileRef} type="file" />
+                {fileName || "Selecionar arquivo .xlsx ou .csv"}
+                <input accept=".xlsx,.xls,.csv" onChange={handleFile} ref={fileRef} type="file" />
               </label>
             </div>
           </div>
