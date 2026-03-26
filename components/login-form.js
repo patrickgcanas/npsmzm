@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export function LoginForm() {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,7 +19,7 @@ export function LoginForm() {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
@@ -40,10 +41,23 @@ export function LoginForm() {
   return (
     <form className="login-form" onSubmit={handleSubmit}>
       <label>
+        E-mail
+        <input
+          autoComplete="email"
+          autoFocus
+          disabled={loading}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="seu@email.com"
+          required
+          type="email"
+          value={email}
+        />
+      </label>
+
+      <label>
         Senha
         <input
           autoComplete="current-password"
-          autoFocus
           disabled={loading}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Digite a senha de acesso"

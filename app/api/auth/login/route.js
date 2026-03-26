@@ -7,17 +7,18 @@ async function sign(data, secret) {
 }
 
 export async function POST(request) {
-  const { password } = await request.json();
+  const { email, password } = await request.json();
 
+  const expectedEmail = process.env.ADMIN_EMAIL;
   const expectedPassword = process.env.ADMIN_PASSWORD;
   const secret = process.env.AUTH_SECRET;
 
-  if (!expectedPassword || !secret) {
+  if (!expectedEmail || !expectedPassword || !secret) {
     return NextResponse.json({ error: "Servidor não configurado." }, { status: 500 });
   }
 
-  if (password !== expectedPassword) {
-    return NextResponse.json({ error: "Senha incorreta." }, { status: 401 });
+  if (email !== expectedEmail || password !== expectedPassword) {
+    return NextResponse.json({ error: "E-mail ou senha incorretos." }, { status: 401 });
   }
 
   const exp = Date.now() + 12 * 60 * 60 * 1000; // 12 hours
