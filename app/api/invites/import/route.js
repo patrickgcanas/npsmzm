@@ -29,8 +29,13 @@ export async function POST(request) {
       continue;
     }
 
-    if (!advisors.includes(advisor)) {
-      results.errors.push(`Advisor inválido: "${advisor}" para cliente ${clientName}.`);
+    const normalize = (s) =>
+      String(s ?? "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+
+    const matchedAdvisor = advisors.find((a) => normalize(a) === normalize(advisor));
+
+    if (!matchedAdvisor) {
+      results.errors.push(`Advisor inválido: "${advisor}" para cliente ${clientName}. Verifique o nome exato.`);
       results.skipped++;
       continue;
     }
@@ -42,7 +47,7 @@ export async function POST(request) {
           clientName,
           clientEmail,
           clientCode,
-          advisor,
+          advisor: matchedAdvisor,
           relationshipNote,
         },
       });

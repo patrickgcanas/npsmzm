@@ -17,13 +17,31 @@ const TEMPLATE_EXAMPLE = [
 ];
 
 // Mapeia colunas do Salesforce para chaves internas
-function mapSalesforceRow(row) {
-  const get = (key) => row[key]?.trim() || row[key.toLowerCase()]?.trim() || "";
+// Usa busca tolerante (lowercase + sem acentos) para não quebrar com variações de header
+function normalize(str) {
+  return String(str ?? "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
+}
+
+function mapSalesforceRow(rawRow) {
+  // Normaliza todas as chaves do objeto para lookup tolerante
+  const row = {};
+  for (const [key, val] of Object.entries(rawRow)) {
+    row[normalize(key)] = typeof val === "string" ? val.trim() : String(val ?? "").trim();
+  }
+
+  const find = (...candidates) => {
+    for (const c of candidates) {
+      const v = row[normalize(c)];
+      if (v) return v;
+    }
+    return "";
+  };
+
   return {
-    nome: get("Nome do Cliente (Apenas o primeiro nome)"),
-    email: get("E-mail"),
-    sigla: get("Sigla do Cliente"),
-    advisor: get("Advisor responsável"),
+    nome:    find("Nome do Cliente (Apenas o primeiro nome)", "Nome do Cliente", "Nome", "name"),
+    email:   find("E-mail", "Email", "e-mail"),
+    sigla:   find("Sigla do Cliente", "Sigla", "codigo", "code"),
+    advisor: find("Advisor responsável", "Advisor responsavel", "Advisor", "consultor"),
   };
 }
 
