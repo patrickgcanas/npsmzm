@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getDashboardResponses } from "@/lib/data";
 import { getPillarAverages, responseCsatPercent } from "@/lib/analytics";
 

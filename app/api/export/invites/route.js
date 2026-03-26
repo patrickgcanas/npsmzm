@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { getAllInvites } from "@/lib/data";
 
 function esc(value) {

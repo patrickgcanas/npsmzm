@@ -89,7 +89,7 @@ export function SiteShell({ children }) {
           </nav>
         ) : (
           <div className="public-badge">Pesquisa do cliente</div>
-        ) : null}
+        )}
 
         {!isPublicSurvey && (
           <button className="logout-btn" onClick={handleLogout} type="button">
