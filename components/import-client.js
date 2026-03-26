@@ -3,11 +3,28 @@
 import { useRef, useState } from "react";
 import Papa from "papaparse";
 
-const TEMPLATE_HEADERS = ["nome", "email", "sigla", "advisor", "contexto"];
-const TEMPLATE_EXAMPLE = [
-  ["João Silva", "joao@email.com", "JS001", "Daniel Mazza", "Revisão estratégica Q1"],
-  ["Maria Oliveira", "maria@email.com", "MO002", "Fabio Marques", ""],
+// Colunas no formato exato do Salesforce
+const TEMPLATE_HEADERS = [
+  "Nome do Cliente (Apenas o primeiro nome)",
+  "E-mail",
+  "Sigla do Cliente",
+  "Advisor responsável",
 ];
+const TEMPLATE_EXAMPLE = [
+  ["João", "joao@email.com", "JS001", "Daniel Mazza"],
+  ["Maria", "maria@email.com", "MO002", "Fabio Marques"],
+];
+
+// Mapeia colunas do Salesforce para chaves internas
+function mapSalesforceRow(row) {
+  const get = (key) => row[key]?.trim() || row[key.toLowerCase()]?.trim() || "";
+  return {
+    nome: get("Nome do Cliente (Apenas o primeiro nome)"),
+    email: get("E-mail"),
+    sigla: get("Sigla do Cliente"),
+    advisor: get("Advisor responsável"),
+  };
+}
 
 function downloadTemplate() {
   const rows = [TEMPLATE_HEADERS, ...TEMPLATE_EXAMPLE];
@@ -46,13 +63,13 @@ export function ImportClient() {
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
-      transformHeader: (h) => h.trim().toLowerCase().replace(/\s+/g, "_"),
+      transformHeader: (h) => h.trim(),
       complete: ({ data, errors }) => {
         if (errors.length) {
           setParseError("Erro ao ler o arquivo. Verifique se é um CSV válido.");
           return;
         }
-        setRows(data);
+        setRows(data.map(mapSalesforceRow));
       },
     });
   }
@@ -122,13 +139,19 @@ export function ImportClient() {
                 <table>
                   <thead>
                     <tr>
-                      {TEMPLATE_HEADERS.map((h) => <th key={h}>{h}</th>)}
+                      <th>Nome</th>
+                      <th>E-mail</th>
+                      <th>Sigla</th>
+                      <th>Advisor</th>
                     </tr>
                   </thead>
                   <tbody>
                     {rows.slice(0, 5).map((row, i) => (
                       <tr key={i}>
-                        {TEMPLATE_HEADERS.map((h) => <td key={h}>{row[h] || "—"}</td>)}
+                        <td>{row.nome || "—"}</td>
+                        <td>{row.email || "—"}</td>
+                        <td>{row.sigla || "—"}</td>
+                        <td>{row.advisor || "—"}</td>
                       </tr>
                     ))}
                     {rows.length > 5 && (
@@ -226,27 +249,26 @@ export function ImportClient() {
         </div>
         <div className="column-ref-grid">
           <div className="column-ref-block">
-            <strong>Template de importação</strong>
+            <strong>Template de importação (formato Salesforce)</strong>
             <table>
               <thead><tr><th>Coluna</th><th>Obrigatório</th><th>Descrição</th></tr></thead>
               <tbody>
-                <tr><td><code>nome</code></td><td>Sim</td><td>Nome completo do cliente</td></tr>
-                <tr><td><code>email</code></td><td>Não</td><td>E-mail do cliente</td></tr>
-                <tr><td><code>sigla</code></td><td>Não</td><td>ID do cliente no Salesforce (Account ID ou código interno)</td></tr>
-                <tr><td><code>advisor</code></td><td>Sim</td><td>Nome exato do consultor (como cadastrado no sistema)</td></tr>
-                <tr><td><code>contexto</code></td><td>Não</td><td>Nota de relacionamento para personalizar o convite</td></tr>
+                <tr><td><code>Nome do Cliente (Apenas o primeiro nome)</code></td><td>Sim</td><td>Primeiro nome do cliente</td></tr>
+                <tr><td><code>E-mail</code></td><td>Não</td><td>E-mail do cliente</td></tr>
+                <tr><td><code>Sigla do Cliente</code></td><td>Não</td><td>Account ID ou código interno do Salesforce</td></tr>
+                <tr><td><code>Advisor responsável</code></td><td>Sim</td><td>Nome exato do consultor (como cadastrado no sistema)</td></tr>
               </tbody>
             </table>
           </div>
           <div className="column-ref-block">
-            <strong>Export de respostas</strong>
+            <strong>Export de respostas (formato Salesforce)</strong>
             <table>
               <thead><tr><th>Coluna</th><th>Descrição</th></tr></thead>
               <tbody>
-                <tr><td><code>sigla</code></td><td>Vincule ao Account ID no Salesforce</td></tr>
-                <tr><td><code>nps</code></td><td>Score 0–10</td></tr>
-                <tr><td><code>csat_pct</code></td><td>% de respostas 4 ou 5</td></tr>
-                <tr><td><code>na/ns/nn_media</code></td><td>Média 0–5 por pilar</td></tr>
+                <tr><td><code>Sigla do Cliente</code></td><td>Chave de vínculo com o Account no Salesforce</td></tr>
+                <tr><td><code>Advisor responsável</code></td><td>Nome do consultor</td></tr>
+                <tr><td><code>NPS</code></td><td>Score 0–10</td></tr>
+                <tr><td><code>CSAT</code></td><td>% de respostas 4 ou 5</td></tr>
               </tbody>
             </table>
           </div>
