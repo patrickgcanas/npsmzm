@@ -11,7 +11,6 @@ import {
 } from "@/lib/analytics";
 import { advisors, csatQuestions } from "@/lib/survey";
 import { MetricCard } from "@/components/metric-card";
-import { OfficeOverviewChart } from "@/components/office-overview";
 
 function formatSigned(value) {
   return value > 0 ? `+${value}` : String(value);
@@ -255,16 +254,6 @@ export function DashboardClient({ initialResponses }) {
       </section>
 
       <section className="dashboard-grid">
-        <article className="glass-card chart-card wide">
-          <div className="panel-header">
-            <h2>Visão global do escritório</h2>
-            <span>CSAT e NPS consolidados</span>
-          </div>
-          <div className="chart-surface">
-            <OfficeOverviewChart metrics={metrics} trendData={trendData} />
-          </div>
-        </article>
-
         <article className="glass-card chart-card">
           <div className="panel-header">
             <h2>Distribuição de notas NPS</h2>

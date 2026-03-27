@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const SUBJECT = "Pesquisa de satisfação | MZM Wealth";
 
@@ -16,9 +17,22 @@ function buildMailto(invite, appUrl) {
 
 export function BulkEmailPanel({ pendingInvites, appUrl }) {
   const [opened, setOpened] = useState(new Set());
+  const [clearing, setClearing] = useState(false);
+  const router = useRouter();
 
   function markOpened(id) {
     setOpened((prev) => new Set([...prev, id]));
+  }
+
+  async function handleClear() {
+    if (!confirm(`Remover os ${pendingInvites.length} convite(s) pendente(s)? Esta ação não pode ser desfeita.`)) return;
+    setClearing(true);
+    try {
+      await fetch("/api/invites/clear", { method: "DELETE" });
+      router.refresh();
+    } finally {
+      setClearing(false);
+    }
   }
 
   const openedCount = opened.size;
@@ -36,7 +50,16 @@ export function BulkEmailPanel({ pendingInvites, appUrl }) {
             )}
           </p>
         </div>
-        <span className="status-badge">{total} pendente{total !== 1 ? "s" : ""}</span>
+        <div className="panel-header-actions">
+          <span className="status-badge">{total} pendente{total !== 1 ? "s" : ""}</span>
+          <button
+            className="button button-ghost button-sm"
+            disabled={clearing}
+            onClick={handleClear}
+          >
+            {clearing ? "Limpando..." : "Limpar registros"}
+          </button>
+        </div>
       </div>
 
       <div className="table-wrap">
