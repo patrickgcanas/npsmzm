@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { MetricCard } from "@/components/metric-card";
 import { PillarRadar } from "@/components/pillar-radar";
-import { computeMetrics, getPillarAverages } from "@/lib/analytics";
+import { OfficeOverviewChart } from "@/components/office-overview";
+import { computeMetrics, getPillarAverages, getTrendData } from "@/lib/analytics";
 import { getHomeSummary } from "@/lib/data";
 
 export const dynamic = "force-dynamic";
@@ -14,6 +15,7 @@ export default async function HomePage() {
   const responses = await getHomeSummary();
   const metrics = computeMetrics(responses);
   const pillars = getPillarAverages(responses);
+  const trendData = getTrendData(responses);
 
   return (
     <>
@@ -55,30 +57,46 @@ export default async function HomePage() {
         </div>
       </section>
 
+      <section className="glass-card office-overview-section">
+        <div className="panel-header">
+          <div>
+            <span className="section-label">Visão global do escritório</span>
+            <h2 style={{ marginTop: 4 }}>CSAT e NPS consolidados</h2>
+          </div>
+          <Link className="button button-secondary button-sm" href="/dashboard">
+            Ver relatório completo
+          </Link>
+        </div>
+        <div className="chart-surface">
+          <OfficeOverviewChart metrics={metrics} trendData={trendData} />
+        </div>
+      </section>
+
       <section className="advisor-layout">
         <article className="glass-card advisor-guide-card">
           <span className="section-label">Passo a passo</span>
           <h2>Como enviar a pesquisa de satisfação aos clientes.</h2>
           <div className="guide-steps">
             <div className="guide-step">
-              <strong>1. Acesse a central de envio</strong>
+              <strong>1. Cadastre os clientes</strong>
               <p>
-                Cadastre o cliente, selecione o advisor responsável e registre o contexto que ajuda a personalizar o
-                convite.
+                Individualmente pela aba Envios, preenchendo nome, e-mail e advisor. Ou em lote pela aba Importação,
+                carregando uma planilha Excel com todos os clientes de uma vez.
               </p>
             </div>
             <div className="guide-step">
-              <strong>2. Gere o link dinâmico</strong>
+              <strong>2. Abra os rascunhos de e-mail</strong>
               <p>
-                O sistema cria um token exclusivo para cada cliente, com rastreabilidade da resposta e um link pronto
-                para compartilhamento.
+                Na aba Envios, cada convite pendente aparece com um botão{" "}
+                <strong>Abrir e-mail</strong>. Clique para abrir o rascunho personalizado no Outlook com nome,
+                e-mail e link da pesquisa já preenchidos.
               </p>
             </div>
             <div className="guide-step">
-              <strong>3. Compartilhe no melhor momento</strong>
+              <strong>3. Envie no momento certo</strong>
               <p>
-                Use o convite em marcos relevantes da relação, como revisões estratégicas, entregas importantes ou
-                após uma reunião-chave.
+                Use os convites em marcos relevantes da relação: revisões estratégicas, entregas importantes ou após
+                reuniões-chave com o cliente.
               </p>
             </div>
             <div className="guide-step">

@@ -11,6 +11,7 @@ import {
 } from "@/lib/analytics";
 import { advisors, csatQuestions } from "@/lib/survey";
 import { MetricCard } from "@/components/metric-card";
+import { OfficeOverviewChart } from "@/components/office-overview";
 
 function formatSigned(value) {
   return value > 0 ? `+${value}` : String(value);
@@ -54,8 +55,7 @@ function PillarChart({ responses }) {
   );
 }
 
-function TrendChart({ responses }) {
-  const entries = getTrendData(responses);
+function TrendChart({ entries, valueKey, yMin, yMax, formatValue, showArea = true }) {
   if (!entries.length) {
     return <p className="muted">Sem dados suficientes para a série histórica.</p>;
   }
@@ -67,42 +67,52 @@ function TrendChart({ responses }) {
   const usableWidth = width - paddingX * 2;
   const usableHeight = height - paddingY * 2;
   const steps = Math.max(entries.length - 1, 1);
+  const range = yMax - yMin;
 
   const points = entries.map((entry, index) => {
+    const value = entry[valueKey];
     const x = paddingX + (usableWidth / steps) * index;
-    const y = paddingY + usableHeight - (entry.csat / 100) * usableHeight;
-    return { ...entry, x, y };
+    const y = paddingY + usableHeight - ((value - yMin) / range) * usableHeight;
+    return { ...entry, value, x, y };
   });
 
   const linePath = points
     .map((point, index) => `${index === 0 ? "M" : "L"} ${point.x.toFixed(1)} ${point.y.toFixed(1)}`)
     .join(" ");
   const areaPath = `${linePath} L ${points[points.length - 1].x.toFixed(1)} ${(height - paddingY).toFixed(1)} L ${
-    points[0].x
+    points[0].x.toFixed(1)
   } ${(height - paddingY).toFixed(1)} Z`;
 
-  const yTicks = [0, 25, 50, 75, 100];
+  const step = range / 4;
+  const yTicks = [0, 1, 2, 3, 4].map((i) => yMin + step * i);
+
+  // Zero reference line for charts with a negative range
+  const zeroY =
+    yMin < 0 ? paddingY + usableHeight - ((0 - yMin) / range) * usableHeight : null;
 
   return (
     <svg className="trend-svg" role="img" viewBox={`0 0 ${width} ${height}`}>
-      {yTicks.map((value) => {
-        const y = paddingY + usableHeight - (value / 100) * usableHeight;
+      {yTicks.map((tick) => {
+        const y = paddingY + usableHeight - ((tick - yMin) / range) * usableHeight;
         return (
-          <g key={value}>
+          <g key={tick}>
             <line className="trend-grid-line" x1={paddingX} x2={width - paddingX} y1={y} y2={y} />
             <text className="trend-axis-label" textAnchor="end" x={paddingX - 14} y={y + 4}>
-              {value}%
+              {formatValue(tick)}
             </text>
           </g>
         );
       })}
-      <path className="trend-area" d={areaPath} />
+      {zeroY !== null && (
+        <line className="trend-zero-line" x1={paddingX} x2={width - paddingX} y1={zeroY} y2={zeroY} />
+      )}
+      {showArea && <path className="trend-area" d={areaPath} />}
       <path className="trend-line" d={linePath} />
       {points.map((point) => (
         <g key={point.month}>
           <circle className="trend-point" cx={point.x} cy={point.y} r="6" />
           <text className="trend-value-label" textAnchor="middle" x={point.x} y={point.y - 12}>
-            {point.csat}%
+            {formatValue(point.value)}
           </text>
           <text className="trend-label" textAnchor="middle" x={point.x} y={height - 8}>
             {point.label}
@@ -197,6 +207,7 @@ export function DashboardClient({ initialResponses }) {
   }, [advisor, initialResponses, search]);
 
   const metrics = useMemo(() => computeMetrics(filtered), [filtered]);
+  const trendData = useMemo(() => getTrendData(filtered), [filtered]);
   const insights = useMemo(() => getInsights(filtered, metrics), [filtered, metrics]);
 
   return (
@@ -244,6 +255,16 @@ export function DashboardClient({ initialResponses }) {
       </section>
 
       <section className="dashboard-grid">
+        <article className="glass-card chart-card wide">
+          <div className="panel-header">
+            <h2>Visão global do escritório</h2>
+            <span>CSAT e NPS consolidados</span>
+          </div>
+          <div className="chart-surface">
+            <OfficeOverviewChart metrics={metrics} trendData={trendData} />
+          </div>
+        </article>
+
         <article className="glass-card chart-card">
           <div className="panel-header">
             <h2>Distribuição de notas NPS</h2>
@@ -264,17 +285,40 @@ export function DashboardClient({ initialResponses }) {
           </div>
         </article>
 
-        <article className="glass-card chart-card wide">
+        <article className="glass-card chart-card">
           <div className="panel-header">
-            <h2>Evolução mensal</h2>
-            <span>CSAT por período</span>
+            <h2>Evolução mensal — CSAT</h2>
+            <span>Satisfação por período</span>
           </div>
           <div className="chart-surface">
-            <TrendChart responses={filtered} />
+            <TrendChart
+              entries={trendData}
+              formatValue={(v) => `${Math.round(v)}%`}
+              valueKey="csat"
+              yMax={100}
+              yMin={0}
+            />
           </div>
         </article>
 
         <article className="glass-card chart-card">
+          <div className="panel-header">
+            <h2>Evolução mensal — NPS</h2>
+            <span>Lealdade por período</span>
+          </div>
+          <div className="chart-surface">
+            <TrendChart
+              entries={trendData}
+              formatValue={(v) => (v > 0 ? `+${Math.round(v)}` : String(Math.round(v)))}
+              showArea={false}
+              valueKey="nps"
+              yMax={100}
+              yMin={-100}
+            />
+          </div>
+        </article>
+
+        <article className="glass-card chart-card wide">
           <div className="panel-header">
             <h2>Insights qualitativos</h2>
             <span>Leitura automática simples</span>
