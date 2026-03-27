@@ -1,0 +1,1 @@
+ALTER TABLE "SurveyInvite" ADD COLUMN "deletedAt" TIMESTAMP;

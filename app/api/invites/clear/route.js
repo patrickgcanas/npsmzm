@@ -5,6 +5,7 @@ export async function DELETE() {
   try {
     const result = await prisma.surveyInvite.deleteMany({
       where: {
+        deletedAt: null,
         response: { is: null },
       },
     });

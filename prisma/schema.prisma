@@ -19,6 +19,7 @@ model SurveyInvite {
   createdAt        DateTime        @default(now())
   viewedAt         DateTime?
   startedAt        DateTime?
+  deletedAt        DateTime?
   response         SurveyResponse?
 }
 
