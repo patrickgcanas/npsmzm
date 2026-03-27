@@ -15,49 +15,60 @@ function buildMailto(invite, appUrl) {
 }
 
 export function BulkEmailPanel({ pendingInvites, appUrl }) {
-  const [opening, setOpening] = useState(false);
-  const [openedCount, setOpenedCount] = useState(0);
-  const [done, setDone] = useState(false);
+  const [opened, setOpened] = useState(new Set());
 
-  function openAllEmails() {
-    setOpening(true);
-    setDone(false);
-    setOpenedCount(0);
-
-    pendingInvites.forEach((invite, index) => {
-      setTimeout(() => {
-        window.open(buildMailto(invite, appUrl), "_blank");
-        setOpenedCount(index + 1);
-        if (index === pendingInvites.length - 1) {
-          setOpening(false);
-          setDone(true);
-        }
-      }, index * 600);
-    });
+  function markOpened(id) {
+    setOpened((prev) => new Set([...prev, id]));
   }
 
+  const openedCount = opened.size;
+  const total = pendingInvites.length;
+
   return (
-    <section className="glass-card bulk-panel">
-      <div className="bulk-panel-left">
-        <strong>Envio em lote</strong>
-        <p>
-          {done
-            ? `${pendingInvites.length} rascunho${pendingInvites.length !== 1 ? "s" : ""} aberto${pendingInvites.length !== 1 ? "s" : ""} no Outlook. Revise e clique em Enviar em cada um.`
-            : `${pendingInvites.length} cliente${pendingInvites.length !== 1 ? "s" : ""} com convite pendente e e-mail cadastrado.`}
-        </p>
+    <section className="glass-card bulk-panel-card">
+      <div className="panel-header">
+        <div>
+          <h2>Envio em lote</h2>
+          <p className="bulk-subtitle">
+            Clique em <strong>Abrir e-mail</strong> em cada linha para abrir o rascunho no Outlook.
+            {openedCount > 0 && (
+              <span className="bulk-progress"> {openedCount} de {total} aberto{openedCount !== 1 ? "s" : ""}.</span>
+            )}
+          </p>
+        </div>
+        <span className="status-badge">{total} pendente{total !== 1 ? "s" : ""}</span>
       </div>
-      <button
-        className="button button-primary"
-        disabled={opening}
-        onClick={openAllEmails}
-        type="button"
-      >
-        {opening
-          ? `Abrindo ${openedCount} de ${pendingInvites.length}...`
-          : done
-          ? "Reabrir rascunhos"
-          : `Abrir ${pendingInvites.length} rascunho${pendingInvites.length !== 1 ? "s" : ""} no Outlook`}
-      </button>
+
+      <div className="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Cliente</th>
+              <th>E-mail</th>
+              <th>Advisor</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            {pendingInvites.map((invite) => (
+              <tr key={invite.id} className={opened.has(invite.id) ? "bulk-row-done" : ""}>
+                <td>{invite.clientName}</td>
+                <td>{invite.clientEmail}</td>
+                <td>{invite.advisor}</td>
+                <td>
+                  <a
+                    className={`button button-secondary button-sm${opened.has(invite.id) ? " bulk-btn-done" : ""}`}
+                    href={buildMailto(invite, appUrl)}
+                    onClick={() => markOpened(invite.id)}
+                  >
+                    {opened.has(invite.id) ? "Reabrir" : "Abrir e-mail"}
+                  </a>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </section>
   );
 }

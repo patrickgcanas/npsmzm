@@ -520,6 +520,35 @@ td,
   font-size: 0.92rem;
 }
 
+.bulk-panel-card {
+  margin-bottom: 0;
+}
+
+.bulk-subtitle {
+  margin: 4px 0 0;
+  color: var(--text-soft);
+  font-size: 0.9rem;
+}
+
+.bulk-progress {
+  color: var(--brand-strong);
+  font-weight: 600;
+}
+
+.bulk-row-done td {
+  opacity: 0.55;
+}
+
+.bulk-btn-done {
+  opacity: 0.65;
+}
+
+.button-sm {
+  padding: 6px 14px;
+  font-size: 0.82rem;
+  min-height: unset;
+}
+
 .hero-metrics,
 .metrics-grid {
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
