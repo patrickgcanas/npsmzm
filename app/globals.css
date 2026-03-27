@@ -499,6 +499,27 @@ td,
   flex-wrap: wrap;
 }
 
+.bulk-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 0;
+}
+
+.bulk-panel-left strong {
+  display: block;
+  color: var(--brand-strong);
+  margin-bottom: 4px;
+}
+
+.bulk-panel-left p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 0.92rem;
+}
+
 .hero-metrics,
 .metrics-grid {
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
