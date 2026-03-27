@@ -251,6 +251,21 @@ a {
   font-weight: 600;
 }
 
+.nav-dropdown-divider {
+  height: 1px;
+  background: rgba(22, 54, 51, 0.1);
+  margin: 4px 0;
+}
+
+.nav-dropdown-logout {
+  width: 100%;
+  text-align: left;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+}
+
 .nav-link {
   display: inline-flex;
   align-items: center;

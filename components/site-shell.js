@@ -84,6 +84,10 @@ export function SiteShell({ children }) {
                     </Link>
                   );
                 })}
+                <div className="nav-dropdown-divider" />
+                <button className="nav-dropdown-item nav-dropdown-logout" onClick={handleLogout}>
+                  Sair
+                </button>
               </div>
             )}
           </nav>
@@ -91,11 +95,6 @@ export function SiteShell({ children }) {
           <div className="public-badge">Pesquisa do cliente</div>
         )}
 
-        {!isPublicSurvey && (
-          <button className="logout-btn" onClick={handleLogout} type="button">
-            Sair
-          </button>
-        )}
       </header>
 
       <main>{children}</main>
