@@ -87,14 +87,28 @@ export function ImportClient() {
         try {
           const workbook = XLSX.read(new Uint8Array(ev.target.result), { type: "array" });
           const sheet = workbook.Sheets[workbook.SheetNames[0]];
-          const data = XLSX.utils.sheet_to_json(sheet, { defval: "" });
-          if (!data.length) {
-            setParseError("A planilha está vazia ou sem dados na primeira aba.");
+          // header:1 retorna array de arrays — não depende do nome das colunas
+          const matrix = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+          if (matrix.length < 2) {
+            setParseError("A planilha está vazia ou não tem dados após o cabeçalho.");
             return;
           }
-          setRows(data.map(mapSalesforceRow));
+          // Linha 0 = cabeçalhos (ignorada), linhas seguintes = dados
+          const dataRows = matrix.slice(1).filter((row) => row.some((c) => String(c).trim()));
+          if (!dataRows.length) {
+            setParseError("Nenhuma linha de dados encontrada.");
+            return;
+          }
+          // Mapeamento posicional: A=nome, B=email, C=sigla, D=advisor
+          const mapped = dataRows.map((row) => ({
+            nome:    String(row[0] ?? "").trim(),
+            email:   String(row[1] ?? "").trim(),
+            sigla:   String(row[2] ?? "").trim(),
+            advisor: String(row[3] ?? "").trim(),
+          }));
+          setRows(mapped);
         } catch {
-          setParseError("Erro ao ler o arquivo Excel. Verifique se o arquivo não está corrompido.");
+          setParseError("Erro ao ler o arquivo Excel. Verifique se não está corrompido.");
         }
       };
       reader.readAsArrayBuffer(file);
