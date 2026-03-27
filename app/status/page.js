@@ -1,5 +1,5 @@
 import { StatusClient } from "@/components/status-client";
-import { getAllInvites } from "@/lib/data";
+import { getAllInvites, getAppUrl } from "@/lib/data";
 
 export const metadata = {
   title: "Status | MZM Client Experience",
@@ -9,6 +9,7 @@ export const dynamic = "force-dynamic";
 
 export default async function StatusPage() {
   const invites = await getAllInvites();
+  const appUrl = getAppUrl();
 
   return (
     <>
@@ -18,7 +19,7 @@ export default async function StatusPage() {
         <p>Visão geral de todos os convites enviados e situação de preenchimento por cliente.</p>
       </section>
 
-      <StatusClient initialInvites={invites} />
+      <StatusClient appUrl={appUrl} initialInvites={invites} />
     </>
   );
 }

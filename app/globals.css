@@ -492,6 +492,13 @@ td,
   align-items: center;
 }
 
+.panel-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .hero-metrics,
 .metrics-grid {
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
