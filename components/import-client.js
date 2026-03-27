@@ -93,12 +93,17 @@ export function ImportClient() {
             setParseError("A planilha está vazia ou não tem dados após o cabeçalho.");
             return;
           }
-          // Linha 0 = cabeçalhos (ignorada), linhas seguintes = dados
-          const dataRows = matrix.slice(1).filter((row) => row.some((c) => String(c).trim()));
-          if (!dataRows.length) {
+          // Encontra a primeira linha que parece ser dado real (não vazia e não header)
+          const isHeaderRow = (row) => {
+            const first = String(row[0] ?? "").trim().toLowerCase();
+            return !first || first.startsWith("nome") || first === "cliente";
+          };
+          const firstDataIndex = matrix.findIndex((row) => !isHeaderRow(row));
+          if (firstDataIndex === -1) {
             setParseError("Nenhuma linha de dados encontrada.");
             return;
           }
+          const dataRows = matrix.slice(firstDataIndex).filter((row) => row.some((c) => String(c).trim()));
           // Mapeamento posicional: A=nome, B=email, C=sigla, D=advisor
           const mapped = dataRows.map((row) => ({
             nome:    String(row[0] ?? "").trim(),
