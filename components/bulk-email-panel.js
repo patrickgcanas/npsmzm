@@ -2,17 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-
-const SUBJECT = "Pesquisa de satisfação | MZM Wealth";
-
-function buildMessage(clientName, inviteUrl) {
-  return `Olá, ${clientName}.\n\nAqui é a Ariane, responsável pelo setor de Client Experience da MZM Wealth. Preparamos uma pesquisa breve para entender como você percebe nossa atuação e sua satisfação com a experiência consultiva.\n\nSeu retorno nos ajudará a evoluir continuamente o padrão de atendimento, a satisfação percebida e a experiência consultiva.\n\nVocê pode responder neste link:\n${inviteUrl}\n\nA pesquisa leva cerca de 3 minutos.\n\nMuito obrigado,\nAriane Siciliano\nMZM Wealth`;
-}
+import { buildInviteMessage, INVITE_SUBJECT } from "@/lib/survey";
 
 function buildMailto(invite, appUrl) {
   const inviteUrl = `${appUrl}/survey/${invite.token}`;
-  const body = buildMessage(invite.clientName, inviteUrl);
-  return `mailto:${encodeURIComponent(invite.clientEmail)}?subject=${encodeURIComponent(SUBJECT)}&body=${encodeURIComponent(body)}`;
+  const body = buildInviteMessage({ clientName: invite.clientName, inviteUrl });
+  return `mailto:${encodeURIComponent(invite.clientEmail)}?subject=${encodeURIComponent(INVITE_SUBJECT)}&body=${encodeURIComponent(body)}`;
 }
 
 export function BulkEmailPanel({ pendingInvites, appUrl }) {
