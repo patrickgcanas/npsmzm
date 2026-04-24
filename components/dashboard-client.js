@@ -326,7 +326,11 @@ export function DashboardClient({ initialResponses }) {
       <section className="glass-card table-card">
         <div className="panel-header">
           <h2>Respostas recentes</h2>
-          <span>{new Date().toLocaleString("pt-BR")}</span>
+          <span>
+            {filtered.length > 0
+              ? `última em ${new Date(filtered[0].createdAt).toLocaleDateString("pt-BR")}`
+              : "sem respostas"}
+          </span>
         </div>
 
         <div className="table-wrap">
