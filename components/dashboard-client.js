@@ -346,20 +346,29 @@ export function DashboardClient({ initialResponses }) {
             </thead>
             <tbody>
               {filtered.length ? (
-                filtered.slice(0, 10).map((response) => {
-                  const comment =
-                    response.improvements || response.otherComments || response.strengths || "Sem comentário";
+                <>
+                  {filtered.slice(0, 10).map((response) => {
+                    const comment =
+                      response.improvements || response.otherComments || response.strengths || "Sem comentário";
 
-                  return (
-                    <tr className="table-row-clickable" key={response.id} onClick={() => setSelected(response)}>
-                      <td>{response.clientName}</td>
-                      <td>{response.advisor}</td>
-                      <td>{responseCsatPercent(response)}%</td>
-                      <td>{response.npsScore}</td>
-                      <td>{comment}</td>
+                    return (
+                      <tr className="table-row-clickable" key={response.id} onClick={() => setSelected(response)}>
+                        <td>{response.clientName}</td>
+                        <td>{response.advisor}</td>
+                        <td>{responseCsatPercent(response)}%</td>
+                        <td>{response.npsScore}</td>
+                        <td>{comment}</td>
+                      </tr>
+                    );
+                  })}
+                  {filtered.length > 10 && (
+                    <tr>
+                      <td className="muted" colSpan="5">
+                        Exibindo 10 de {filtered.length} respostas. Use os filtros para refinar.
+                      </td>
                     </tr>
-                  );
-                })
+                  )}
+                </>
               ) : (
                 <tr>
                   <td className="muted" colSpan="5">
