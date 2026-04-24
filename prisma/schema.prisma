@@ -20,6 +20,9 @@ model SurveyInvite {
   viewedAt         DateTime?
   startedAt        DateTime?
   deletedAt        DateTime?
+  sentAt           DateTime?
+  sendStatus       String?         @default("pending")
+  sendError        String?
   response         SurveyResponse?
 }
 

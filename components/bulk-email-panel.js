@@ -2,21 +2,45 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { advisors, buildInviteMessage, INVITE_SUBJECT } from "@/lib/survey";
+import { advisors } from "@/lib/survey";
 
-function buildMailto(invite, appUrl) {
-  const inviteUrl = `${appUrl}/survey/${invite.token}`;
-  const body = buildInviteMessage({ clientName: invite.clientName, inviteUrl });
-  return `mailto:${encodeURIComponent(invite.clientEmail)}?subject=${encodeURIComponent(INVITE_SUBJECT)}&body=${encodeURIComponent(body)}`;
+const STATUS_LABEL = {
+  pending: "Pendente",
+  sending: "Enviando…",
+  sent:    "Enviado",
+  failed:  "Falhou",
+};
+
+const STATUS_CLASS = {
+  pending: "bulk-status bulk-status--pending",
+  sending: "bulk-status bulk-status--sending",
+  sent:    "bulk-status bulk-status--sent",
+  failed:  "bulk-status bulk-status--failed",
+};
+
+function StatusBadge({ status }) {
+  return (
+    <span className={STATUS_CLASS[status] || STATUS_CLASS.pending}>
+      {STATUS_LABEL[status] || "Pendente"}
+    </span>
+  );
 }
 
-export function BulkEmailPanel({ pendingInvites, appUrl }) {
-  const [opened, setOpened] = useState(new Set());
-  const [selected, setSelected] = useState(new Set());
-  const [clearing, setClearing] = useState(false);
-  const [advisorFilter, setAdvisorFilter] = useState("");
-  const [search, setSearch] = useState("");
+export function BulkEmailPanel({ pendingInvites }) {
   const router = useRouter();
+
+  const [statusMap, setStatusMap] = useState(() => {
+    const map = {};
+    pendingInvites.forEach((inv) => {
+      map[inv.id] = inv.sendStatus || "pending";
+    });
+    return map;
+  });
+
+  const [sendingAll, setSendingAll]       = useState(false);
+  const [clearing,   setClearing]         = useState(false);
+  const [advisorFilter, setAdvisorFilter] = useState("");
+  const [search, setSearch]               = useState("");
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -30,30 +54,55 @@ export function BulkEmailPanel({ pendingInvites, appUrl }) {
     });
   }, [pendingInvites, advisorFilter, search]);
 
-  const allFilteredSelected = filtered.length > 0 && filtered.every((i) => selected.has(i.id));
+  function setStatus(id, status) {
+    setStatusMap((prev) => ({ ...prev, [id]: status }));
+  }
 
-  function toggleSelectAll() {
-    if (allFilteredSelected) {
-      setSelected((prev) => {
-        const next = new Set(prev);
-        filtered.forEach((i) => next.delete(i.id));
-        return next;
+  async function handleSendOne(inviteId) {
+    setStatus(inviteId, "sending");
+    try {
+      const res  = await fetch("/api/invites/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: inviteId }),
       });
-    } else {
-      setSelected((prev) => new Set([...prev, ...filtered.map((i) => i.id)]));
+      const data = await res.json();
+      setStatus(inviteId, data.success ? "sent" : "failed");
+    } catch {
+      setStatus(inviteId, "failed");
     }
   }
 
-  function toggleOne(id) {
-    setSelected((prev) => {
-      const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
-      return next;
-    });
-  }
+  async function handleSendAll() {
+    const eligibleIds = filtered
+      .filter((inv) => {
+        const s = statusMap[inv.id];
+        return (s === "pending" || s === "failed") && inv.clientEmail;
+      })
+      .map((inv) => inv.id);
 
-  function markOpened(id) {
-    setOpened((prev) => new Set([...prev, id]));
+    if (!eligibleIds.length) return;
+
+    if (!confirm(`Enviar e-mail para ${eligibleIds.length} cliente(s)? Esta ação não pode ser desfeita.`)) return;
+
+    setSendingAll(true);
+    eligibleIds.forEach((id) => setStatus(id, "sending"));
+
+    try {
+      const res  = await fetch("/api/invites/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: eligibleIds }),
+      });
+      const { results } = await res.json();
+      results?.forEach((r) => {
+        if (r.id) setStatus(r.id, r.success ? "sent" : "failed");
+      });
+    } catch {
+      eligibleIds.forEach((id) => setStatus(id, "failed"));
+    } finally {
+      setSendingAll(false);
+    }
   }
 
   async function handleClear() {
@@ -67,10 +116,13 @@ export function BulkEmailPanel({ pendingInvites, appUrl }) {
     }
   }
 
-  const total = pendingInvites.length;
-  const openedCount = opened.size;
-  const selectedCount = selected.size;
-  const isFiltering = advisorFilter || search.trim();
+  const total        = pendingInvites.length;
+  const sentCount    = Object.values(statusMap).filter((s) => s === "sent").length;
+  const isFiltering  = advisorFilter || search.trim();
+  const eligibleCount = filtered.filter((inv) => {
+    const s = statusMap[inv.id];
+    return (s === "pending" || s === "failed") && inv.clientEmail;
+  }).length;
 
   if (total === 0) {
     return (
@@ -88,9 +140,9 @@ export function BulkEmailPanel({ pendingInvites, appUrl }) {
         <div>
           <h2>Envio em lote</h2>
           <p className="bulk-subtitle">
-            Selecione os clientes, filtre por consultor ou sigla e envie.
-            {openedCount > 0 && (
-              <span className="bulk-progress"> {openedCount} de {total} aberto{openedCount !== 1 ? "s" : ""}.</span>
+            Envie individualmente por linha ou use <strong>Enviar todos</strong> para disparar em lote.
+            {sentCount > 0 && (
+              <span className="bulk-progress"> {sentCount} de {total} enviado{sentCount !== 1 ? "s" : ""}.</span>
             )}
           </p>
         </div>
@@ -98,11 +150,13 @@ export function BulkEmailPanel({ pendingInvites, appUrl }) {
           <span className="status-badge">
             {isFiltering ? `${filtered.length} de ${total}` : total} pendente{total !== 1 ? "s" : ""}
           </span>
-          {selectedCount > 0 && (
-            <button className="button button-primary button-sm" disabled title="Disponível após integração com Resend">
-              Enviar {selectedCount} selecionado{selectedCount !== 1 ? "s" : ""}
-            </button>
-          )}
+          <button
+            className="button button-primary button-sm"
+            disabled={sendingAll || eligibleCount === 0}
+            onClick={handleSendAll}
+          >
+            {sendingAll ? "Enviando…" : `Enviar todos (${eligibleCount})`}
+          </button>
           <button
             className="button button-ghost button-sm"
             disabled={clearing}
@@ -139,46 +193,41 @@ export function BulkEmailPanel({ pendingInvites, appUrl }) {
           <table>
             <thead>
               <tr>
-                <th className="col-check">
-                  <input
-                    type="checkbox"
-                    checked={allFilteredSelected}
-                    onChange={toggleSelectAll}
-                    title="Selecionar todos visíveis"
-                  />
-                </th>
                 <th>Cliente</th>
                 <th>Sigla</th>
                 <th>E-mail</th>
                 <th>Consultor</th>
+                <th>Status</th>
                 <th></th>
               </tr>
             </thead>
             <tbody>
-              {filtered.map((invite) => (
-                <tr key={invite.id} className={opened.has(invite.id) ? "bulk-row-done" : ""}>
-                  <td className="col-check">
-                    <input
-                      type="checkbox"
-                      checked={selected.has(invite.id)}
-                      onChange={() => toggleOne(invite.id)}
-                    />
-                  </td>
-                  <td>{invite.clientName}</td>
-                  <td><code className="bulk-code">{invite.clientCode || "—"}</code></td>
-                  <td>{invite.clientEmail}</td>
-                  <td>{invite.advisor}</td>
-                  <td>
-                    <a
-                      className={`button button-secondary button-sm${opened.has(invite.id) ? " bulk-btn-done" : ""}`}
-                      href={buildMailto(invite, appUrl)}
-                      onClick={() => markOpened(invite.id)}
-                    >
-                      {opened.has(invite.id) ? "Reabrir" : "Abrir e-mail"}
-                    </a>
-                  </td>
-                </tr>
-              ))}
+              {filtered.map((invite) => {
+                const status    = statusMap[invite.id] || "pending";
+                const isSending = status === "sending";
+                const isSent    = status === "sent";
+                const noEmail   = !invite.clientEmail;
+
+                return (
+                  <tr key={invite.id} className={isSent ? "bulk-row-done" : ""}>
+                    <td>{invite.clientName}</td>
+                    <td><code className="bulk-code">{invite.clientCode || "—"}</code></td>
+                    <td>{invite.clientEmail || <em className="bulk-no-email">sem e-mail</em>}</td>
+                    <td>{invite.advisor}</td>
+                    <td><StatusBadge status={status} /></td>
+                    <td>
+                      <button
+                        className="button button-secondary button-sm"
+                        disabled={isSending || noEmail}
+                        onClick={() => handleSendOne(invite.id)}
+                        title={noEmail ? "Convite sem e-mail cadastrado" : undefined}
+                      >
+                        {isSending ? "Enviando…" : isSent ? "Reenviar" : "Enviar"}
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         )}

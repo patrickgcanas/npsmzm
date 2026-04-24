@@ -1,6 +1,6 @@
 import { SendInviteForm } from "@/components/send-invite-form";
 import { BulkEmailPanel } from "@/components/bulk-email-panel";
-import { getAllInvites, getAppUrl } from "@/lib/data";
+import { getAllInvites } from "@/lib/data";
 
 export const metadata = {
   title: "Enviar | MZM Client Experience",
@@ -10,8 +10,7 @@ export const dynamic = "force-dynamic";
 
 export default async function SendPage() {
   const invites = await getAllInvites();
-  const appUrl = getAppUrl();
-  const pending = invites.filter((i) => !i.responded && i.clientEmail);
+  const pending = invites.filter((i) => !i.responded);
 
   return (
     <>
@@ -23,7 +22,7 @@ export default async function SendPage() {
         </p>
       </section>
 
-      <BulkEmailPanel appUrl={appUrl} pendingInvites={pending} />
+      <BulkEmailPanel pendingInvites={pending} />
 
       <SendInviteForm />
     </>
