@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { advisors } from "@/lib/survey";
+import { MetricCard } from "@/components/metric-card";
 
 
 export function StatusClient({ initialInvites }) {
@@ -32,30 +33,16 @@ export function StatusClient({ initialInvites }) {
   const started = initialInvites.filter((i) => !i.responded && i.startedAt).length;
   const viewed = initialInvites.filter((i) => !i.responded && !i.startedAt && i.viewedAt).length;
   const notViewed = initialInvites.filter((i) => !i.responded && !i.viewedAt).length;
+  const responseRate = total > 0 ? Math.round((responded / total) * 100) : 0;
 
   return (
     <>
-      <section className="metrics-grid" style={{ marginTop: 24 }}>
-        <div className="metric-card" style={{ background: "rgba(255,255,255,0.55)", border: "1px solid rgba(22,54,51,0.1)", borderRadius: 20, padding: 18 }}>
-          <span className="metric-label">Total enviados</span>
-          <span className="metric-value">{total}</span>
-        </div>
-        <div className="metric-card" style={{ background: "rgba(255,255,255,0.55)", border: "1px solid rgba(22,54,51,0.1)", borderRadius: 20, padding: 18 }}>
-          <span className="metric-label">Respondidos</span>
-          <span className="metric-value">{responded}</span>
-        </div>
-        <div className="metric-card" style={{ background: "rgba(255,255,255,0.55)", border: "1px solid rgba(22,54,51,0.1)", borderRadius: 20, padding: 18 }}>
-          <span className="metric-label">Em preenchimento</span>
-          <span className="metric-value">{started}</span>
-        </div>
-        <div className="metric-card" style={{ background: "rgba(255,255,255,0.55)", border: "1px solid rgba(22,54,51,0.1)", borderRadius: 20, padding: 18 }}>
-          <span className="metric-label">Abriu o link</span>
-          <span className="metric-value">{viewed}</span>
-        </div>
-        <div className="metric-card" style={{ background: "rgba(255,255,255,0.55)", border: "1px solid rgba(22,54,51,0.1)", borderRadius: 20, padding: 18 }}>
-          <span className="metric-label">Não abriu</span>
-          <span className="metric-value">{notViewed}</span>
-        </div>
+      <section className="metrics-grid status-metrics">
+        <MetricCard label="Total criados" value={String(total)} caption="convites na base atual" />
+        <MetricCard label="Taxa de resposta" value={`${responseRate}%`} caption={`${responded} de ${total} respondidos`} />
+        <MetricCard label="Em preenchimento" value={String(started)} caption="abriu mas não concluiu" />
+        <MetricCard label="Abriu o link" value={String(viewed)} caption="visualizou, não respondeu" />
+        <MetricCard label="Não abriu" value={String(notViewed)} caption="sem interação ainda" />
       </section>
 
       <section className="glass-card filters-card">
