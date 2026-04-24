@@ -194,6 +194,11 @@ export function ImportClient() {
           {rows?.length > 0 && (
             <div className="import-preview">
               <p className="import-preview-count">{rows.length} linha{rows.length !== 1 ? "s" : ""} encontrada{rows.length !== 1 ? "s" : ""}</p>
+              {rows.filter((r) => !r.email).length > 0 && (
+                <p className="import-warning">
+                  {rows.filter((r) => !r.email).length} cliente{rows.filter((r) => !r.email).length !== 1 ? "s" : ""} sem e-mail — serão importados mas não poderão receber o convite por e-mail.
+                </p>
+              )}
               <div className="table-wrap">
                 <table>
                   <thead>

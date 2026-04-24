@@ -1617,6 +1617,16 @@ textarea {
   color: var(--text-soft);
 }
 
+.import-warning {
+  margin: 8px 0 0;
+  font-size: 0.88rem;
+  color: #7a5c1e;
+  background: rgba(183, 143, 82, 0.15);
+  border: 1px solid rgba(183, 143, 82, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+}
+
 .import-result {
   padding: 16px;
   border-radius: var(--radius-sm);
