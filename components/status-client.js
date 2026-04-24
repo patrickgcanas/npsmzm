@@ -104,7 +104,7 @@ export function StatusClient({ initialInvites }) {
                 <th>Cliente</th>
                 <th>Sigla</th>
                 <th>Advisor</th>
-                <th>Enviado em</th>
+                <th>Criado em</th>
                 <th>Status</th>
               </tr>
             </thead>
