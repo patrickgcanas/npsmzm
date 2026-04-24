@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { buildInviteMessage, INVITE_SUBJECT } from "@/lib/survey";
+import { advisors, buildInviteMessage, INVITE_SUBJECT } from "@/lib/survey";
 
 function buildMailto(invite, appUrl) {
   const inviteUrl = `${appUrl}/survey/${invite.token}`;
@@ -13,7 +13,21 @@ function buildMailto(invite, appUrl) {
 export function BulkEmailPanel({ pendingInvites, appUrl }) {
   const [opened, setOpened] = useState(new Set());
   const [clearing, setClearing] = useState(false);
+  const [advisorFilter, setAdvisorFilter] = useState("");
+  const [search, setSearch] = useState("");
   const router = useRouter();
+
+  const filtered = useMemo(() => {
+    const q = search.toLowerCase().trim();
+    return pendingInvites.filter((invite) => {
+      const matchesAdvisor = !advisorFilter || invite.advisor === advisorFilter;
+      const matchesSearch =
+        !q ||
+        invite.clientName.toLowerCase().includes(q) ||
+        (invite.clientCode || "").toLowerCase().includes(q);
+      return matchesAdvisor && matchesSearch;
+    });
+  }, [pendingInvites, advisorFilter, search]);
 
   function markOpened(id) {
     setOpened((prev) => new Set([...prev, id]));
@@ -30,8 +44,9 @@ export function BulkEmailPanel({ pendingInvites, appUrl }) {
     }
   }
 
-  const openedCount = opened.size;
   const total = pendingInvites.length;
+  const openedCount = opened.size;
+  const isFiltering = advisorFilter || search.trim();
 
   return (
     <section className="glass-card bulk-panel-card">
@@ -46,7 +61,9 @@ export function BulkEmailPanel({ pendingInvites, appUrl }) {
           </p>
         </div>
         <div className="panel-header-actions">
-          <span className="status-badge">{total} pendente{total !== 1 ? "s" : ""}</span>
+          <span className="status-badge">
+            {isFiltering ? `${filtered.length} de ${total}` : total} pendente{total !== 1 ? "s" : ""}
+          </span>
           <button
             className="button button-ghost button-sm"
             disabled={clearing}
@@ -57,35 +74,60 @@ export function BulkEmailPanel({ pendingInvites, appUrl }) {
         </div>
       </div>
 
+      <div className="bulk-filters">
+        <select
+          className="bulk-filter-select"
+          value={advisorFilter}
+          onChange={(e) => setAdvisorFilter(e.target.value)}
+        >
+          <option value="">Todos os consultores</option>
+          {advisors.map((a) => (
+            <option key={a} value={a}>{a}</option>
+          ))}
+        </select>
+        <input
+          className="bulk-filter-search"
+          placeholder="Buscar por nome ou sigla..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
+
       <div className="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Cliente</th>
-              <th>E-mail</th>
-              <th>Advisor</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {pendingInvites.map((invite) => (
-              <tr key={invite.id} className={opened.has(invite.id) ? "bulk-row-done" : ""}>
-                <td>{invite.clientName}</td>
-                <td>{invite.clientEmail}</td>
-                <td>{invite.advisor}</td>
-                <td>
-                  <a
-                    className={`button button-secondary button-sm${opened.has(invite.id) ? " bulk-btn-done" : ""}`}
-                    href={buildMailto(invite, appUrl)}
-                    onClick={() => markOpened(invite.id)}
-                  >
-                    {opened.has(invite.id) ? "Reabrir" : "Abrir e-mail"}
-                  </a>
-                </td>
+        {filtered.length === 0 ? (
+          <p className="bulk-empty">Nenhum convite encontrado para os filtros aplicados.</p>
+        ) : (
+          <table>
+            <thead>
+              <tr>
+                <th>Cliente</th>
+                <th>Sigla</th>
+                <th>E-mail</th>
+                <th>Consultor</th>
+                <th></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filtered.map((invite) => (
+                <tr key={invite.id} className={opened.has(invite.id) ? "bulk-row-done" : ""}>
+                  <td>{invite.clientName}</td>
+                  <td><code className="bulk-code">{invite.clientCode || "—"}</code></td>
+                  <td>{invite.clientEmail}</td>
+                  <td>{invite.advisor}</td>
+                  <td>
+                    <a
+                      className={`button button-secondary button-sm${opened.has(invite.id) ? " bulk-btn-done" : ""}`}
+                      href={buildMailto(invite, appUrl)}
+                      onClick={() => markOpened(invite.id)}
+                    >
+                      {opened.has(invite.id) ? "Reabrir" : "Abrir e-mail"}
+                    </a>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </section>
   );
