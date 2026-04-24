@@ -48,13 +48,23 @@ export function BulkEmailPanel({ pendingInvites, appUrl }) {
   const openedCount = opened.size;
   const isFiltering = advisorFilter || search.trim();
 
+  if (total === 0) {
+    return (
+      <section className="glass-card bulk-panel-card bulk-empty-state">
+        <h2>Envio em lote</h2>
+        <p className="bulk-subtitle">Nenhum convite pendente. Importe sua base de clientes para começar.</p>
+        <a className="button button-secondary" href="/import">Ir para Importar</a>
+      </section>
+    );
+  }
+
   return (
     <section className="glass-card bulk-panel-card">
       <div className="panel-header">
         <div>
           <h2>Envio em lote</h2>
           <p className="bulk-subtitle">
-            Clique em <strong>Abrir e-mail</strong> em cada linha para abrir o rascunho no Outlook.
+            Filtre por consultor ou sigla e abra o rascunho no Outlook para cada cliente.
             {openedCount > 0 && (
               <span className="bulk-progress"> {openedCount} de {total} aberto{openedCount !== 1 ? "s" : ""}.</span>
             )}

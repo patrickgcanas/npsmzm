@@ -17,14 +17,13 @@ export default async function SendPage() {
     <>
       <section className="section-header">
         <span className="eyebrow">Central de envio</span>
-        <h1>Monte o convite da pesquisa em poucos passos.</h1>
+        <h1>Envie pesquisas de satisfação para sua base de clientes.</h1>
         <p>
-          Gere um link individual no servidor, personalize a mensagem e acompanhe depois a resposta de cada cliente no
-          dashboard.
+          Importe sua base, filtre por consultor ou sigla e envie em lote. Para um cliente específico, use o formulário abaixo.
         </p>
       </section>
 
-      {pending.length > 0 && <BulkEmailPanel appUrl={appUrl} pendingInvites={pending} />}
+      <BulkEmailPanel appUrl={appUrl} pendingInvites={pending} />
 
       <SendInviteForm />
     </>
