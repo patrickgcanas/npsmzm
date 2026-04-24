@@ -12,6 +12,7 @@ function buildMailto(invite, appUrl) {
 
 export function BulkEmailPanel({ pendingInvites, appUrl }) {
   const [opened, setOpened] = useState(new Set());
+  const [selected, setSelected] = useState(new Set());
   const [clearing, setClearing] = useState(false);
   const [advisorFilter, setAdvisorFilter] = useState("");
   const [search, setSearch] = useState("");
@@ -28,6 +29,28 @@ export function BulkEmailPanel({ pendingInvites, appUrl }) {
       return matchesAdvisor && matchesSearch;
     });
   }, [pendingInvites, advisorFilter, search]);
+
+  const allFilteredSelected = filtered.length > 0 && filtered.every((i) => selected.has(i.id));
+
+  function toggleSelectAll() {
+    if (allFilteredSelected) {
+      setSelected((prev) => {
+        const next = new Set(prev);
+        filtered.forEach((i) => next.delete(i.id));
+        return next;
+      });
+    } else {
+      setSelected((prev) => new Set([...prev, ...filtered.map((i) => i.id)]));
+    }
+  }
+
+  function toggleOne(id) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }
 
   function markOpened(id) {
     setOpened((prev) => new Set([...prev, id]));
@@ -46,6 +69,7 @@ export function BulkEmailPanel({ pendingInvites, appUrl }) {
 
   const total = pendingInvites.length;
   const openedCount = opened.size;
+  const selectedCount = selected.size;
   const isFiltering = advisorFilter || search.trim();
 
   if (total === 0) {
@@ -64,7 +88,7 @@ export function BulkEmailPanel({ pendingInvites, appUrl }) {
         <div>
           <h2>Envio em lote</h2>
           <p className="bulk-subtitle">
-            Filtre por consultor ou sigla e abra o rascunho no Outlook para cada cliente.
+            Selecione os clientes, filtre por consultor ou sigla e envie.
             {openedCount > 0 && (
               <span className="bulk-progress"> {openedCount} de {total} aberto{openedCount !== 1 ? "s" : ""}.</span>
             )}
@@ -74,6 +98,11 @@ export function BulkEmailPanel({ pendingInvites, appUrl }) {
           <span className="status-badge">
             {isFiltering ? `${filtered.length} de ${total}` : total} pendente{total !== 1 ? "s" : ""}
           </span>
+          {selectedCount > 0 && (
+            <button className="button button-primary button-sm" disabled title="Disponível após integração com Resend">
+              Enviar {selectedCount} selecionado{selectedCount !== 1 ? "s" : ""}
+            </button>
+          )}
           <button
             className="button button-ghost button-sm"
             disabled={clearing}
@@ -110,6 +139,14 @@ export function BulkEmailPanel({ pendingInvites, appUrl }) {
           <table>
             <thead>
               <tr>
+                <th className="col-check">
+                  <input
+                    type="checkbox"
+                    checked={allFilteredSelected}
+                    onChange={toggleSelectAll}
+                    title="Selecionar todos visíveis"
+                  />
+                </th>
                 <th>Cliente</th>
                 <th>Sigla</th>
                 <th>E-mail</th>
@@ -120,6 +157,13 @@ export function BulkEmailPanel({ pendingInvites, appUrl }) {
             <tbody>
               {filtered.map((invite) => (
                 <tr key={invite.id} className={opened.has(invite.id) ? "bulk-row-done" : ""}>
+                  <td className="col-check">
+                    <input
+                      type="checkbox"
+                      checked={selected.has(invite.id)}
+                      onChange={() => toggleOne(invite.id)}
+                    />
+                  </td>
                   <td>{invite.clientName}</td>
                   <td><code className="bulk-code">{invite.clientCode || "—"}</code></td>
                   <td>{invite.clientEmail}</td>

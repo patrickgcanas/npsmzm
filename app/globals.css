@@ -598,6 +598,11 @@ td,
   gap: 12px;
 }
 
+.col-check {
+  width: 40px;
+  text-align: center;
+}
+
 .bulk-code {
   font-family: monospace;
   font-size: 0.82rem;
