@@ -75,35 +75,37 @@ export default async function HomePage() {
       <section className="advisor-layout">
         <article className="glass-card advisor-guide-card">
           <span className="section-label">Passo a passo</span>
-          <h2>Como enviar a pesquisa de satisfação aos clientes.</h2>
+          <h2>Como rodar um ciclo completo da pesquisa.</h2>
           <div className="guide-steps">
             <div className="guide-step">
-              <strong>1. Cadastre os clientes</strong>
+              <strong>1. Importe a base de clientes</strong>
               <p>
-                Individualmente pela aba Envios, preenchendo nome, e-mail e advisor. Ou em lote pela aba Importação,
-                carregando uma planilha Excel com todos os clientes de uma vez.
+                Na aba <strong>Importar</strong>, carregue a planilha Excel com os dados dos clientes — nome,
+                e-mail, sigla e advisor responsável. O sistema cria todos os convites automaticamente.
               </p>
             </div>
             <div className="guide-step">
-              <strong>2. Abra os rascunhos de e-mail</strong>
+              <strong>2. Dispare os e-mails em lote</strong>
               <p>
-                Na aba Envios, cada convite pendente aparece com um botão{" "}
-                <strong>Abrir e-mail</strong>. Clique para abrir o rascunho personalizado no Outlook com nome,
-                e-mail e link da pesquisa já preenchidos.
+                Na aba <strong>Enviar</strong>, use os filtros de consultor e status para segmentar a base.
+                Clique em <strong>Enviar todos</strong> para disparar automaticamente os e-mails com a
+                assinatura da Ariane e o link personalizado de cada cliente.
               </p>
             </div>
             <div className="guide-step">
-              <strong>3. Envie no momento certo</strong>
+              <strong>3. Acompanhe os status em tempo real</strong>
               <p>
-                Use os convites em marcos relevantes da relação: revisões estratégicas, entregas importantes ou após
-                reuniões-chave com o cliente.
+                Na aba <strong>Status</strong>, monitore quem recebeu, abriu o link, está preenchendo ou já
+                respondeu. Para reenviar apenas para os que ainda não responderam, use o filtro{" "}
+                <strong>Não respondidos (todos)</strong> e dispare novamente em lote.
               </p>
             </div>
             <div className="guide-step">
-              <strong>4. Feche o ciclo com ação</strong>
+              <strong>4. Exporte os resultados para o Salesforce</strong>
               <p>
-                O dashboard consolida CSAT, NPS e comentários para orientar retorno ao cliente, priorização comercial
-                e melhoria contínua.
+                Ao fechar o ciclo, exporte pelo <strong>Dashboard</strong>. O arquivo gerado (.xlsx) já
+                vem formatado com Sigla do Cliente, Advisor, NPS e CSAT — pronto para importar direto no
+                Salesforce.
               </p>
             </div>
           </div>
@@ -111,14 +113,23 @@ export default async function HomePage() {
 
         <article className="glass-card advisor-guide-card">
           <span className="section-label">Boas práticas</span>
-          <h2>Orientações rápidas para os consultores.</h2>
+          <h2>Orientações para extrair o melhor da pesquisa.</h2>
           <ul className="insight-list">
-            <li>Explique que a pesquisa é breve, personalizada e orientada a melhorar a experiência do cliente.</li>
-            <li>Evite disparos em massa. O vínculo consultivo da MZM pede contexto, momento e relevância.</li>
-            <li>Use a observação de relacionamento para tornar a mensagem mais aderente à jornada daquela família.</li>
             <li>
-              Ao receber um comentário importante, trate o retorno como oportunidade de fortalecer confiança e
-              parceria.
+              Preencha a observação de relacionamento ao importar — ela personaliza o contexto de cada cliente
+              e aumenta a taxa de resposta.
+            </li>
+            <li>
+              Use os filtros de status para reenviar somente para quem ainda não respondeu, evitando
+              incomodar quem já participou.
+            </li>
+            <li>
+              Acompanhe a taxa de resposta na aba Status antes de exportar para o Salesforce — garante
+              que o ciclo está suficientemente completo para análise.
+            </li>
+            <li>
+              Ao receber um comentário relevante no dashboard, trate o retorno ao cliente como oportunidade
+              de fortalecer confiança e parceria.
             </li>
           </ul>
         </article>
