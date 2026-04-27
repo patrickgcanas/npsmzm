@@ -53,6 +53,7 @@ export function BulkEmailPanel({ pendingInvites }) {
         (invite.clientCode || "").toLowerCase().includes(q);
       const matchesSurveyStatus =
         !surveyStatusFilter ||
+        surveyStatusFilter === "not_responded" ||
         (surveyStatusFilter === "pending"  && !invite.sentAt) ||
         (surveyStatusFilter === "sent"     && invite.sentAt && !invite.viewedAt) ||
         (surveyStatusFilter === "viewed"   && invite.viewedAt && !invite.startedAt) ||
@@ -191,6 +192,7 @@ export function BulkEmailPanel({ pendingInvites }) {
           onChange={(e) => setSurveyStatus(e.target.value)}
         >
           <option value="">Todos os status</option>
+          <option value="not_responded">Não respondidos (todos)</option>
           <option value="pending">Aguardando envio</option>
           <option value="sent">Enviado, não abriu</option>
           <option value="viewed">Abriu o link</option>
