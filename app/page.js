@@ -103,7 +103,7 @@ export default async function HomePage() {
             <div className="guide-step">
               <strong>4. Exporte os resultados para o Salesforce</strong>
               <p>
-                Ao fechar o ciclo, exporte pelo <strong>Dashboard</strong>. O arquivo gerado (.xlsx) já
+                Ao fechar o ciclo, exporte pela aba <strong>Importar / Exportar</strong>. O arquivo gerado (.xlsx) já
                 vem formatado com Sigla do Cliente, Advisor, NPS e CSAT — pronto para importar direto no
                 Salesforce.
               </p>
