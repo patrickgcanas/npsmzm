@@ -2,36 +2,32 @@ export const dynamic = "force-dynamic";
 
 import { getDashboardResponses } from "@/lib/data";
 import { responseCsatPercent } from "@/lib/analytics";
-
-function esc(value) {
-  if (value == null) return "";
-  const str = String(value).replace(/"/g, '""');
-  return str.includes(",") || str.includes('"') || str.includes("\n") ? `"${str}"` : str;
-}
+import * as XLSX from "xlsx";
 
 export async function GET() {
   const responses = await getDashboardResponses();
 
-  const headers = [
-    "Sigla do Cliente",
-    "Advisor responsável",
-    "NPS",
-    "CSAT",
+  const rows = [
+    ["Sigla do Cliente", "Advisor responsável", "NPS", "CSAT"],
+    ...responses.map((r) => [
+      r.clientCode || "",
+      r.advisor || "",
+      r.npsScore,
+      responseCsatPercent(r),
+    ]),
   ];
 
-  const rows = responses.map((r) => [
-    esc(r.clientCode),
-    esc(r.advisor),
-    esc(r.npsScore),
-    esc(responseCsatPercent(r)),
-  ].join(","));
+  const worksheet = XLSX.utils.aoa_to_sheet(rows);
+  const workbook  = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "Respostas");
 
-  const csv = [headers.join(","), ...rows].join("\n");
+  const buffer = XLSX.write(workbook, { type: "buffer", bookType: "xlsx" });
+  const filename = `mzm-respostas-salesforce-${new Date().toISOString().slice(0, 10)}.xlsx`;
 
-  return new Response("\uFEFF" + csv, {
+  return new Response(buffer, {
     headers: {
-      "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="mzm-respostas-salesforce-${new Date().toISOString().slice(0, 10)}.csv"`,
+      "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "Content-Disposition": `attachment; filename="${filename}"`,
     },
   });
 }
