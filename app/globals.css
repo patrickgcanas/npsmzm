@@ -327,6 +327,21 @@ a {
   color: var(--text-soft);
 }
 
+.status-sent {
+  background: rgba(59, 100, 180, 0.1);
+  color: #2c4fa0;
+}
+
+.status-pending {
+  background: rgba(20, 37, 34, 0.05);
+  color: var(--text-soft);
+}
+
+.status-failed {
+  background: rgba(180, 50, 50, 0.1);
+  color: #8b1a1a;
+}
+
 .live-pill {
   background: rgba(255, 255, 255, 0.12);
   color: rgba(255, 255, 255, 0.84);

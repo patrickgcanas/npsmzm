@@ -23,7 +23,9 @@ export function StatusClient({ initialInvites }) {
         (statusFilter === "responded" && invite.responded) ||
         (statusFilter === "started" && !invite.responded && invite.startedAt) ||
         (statusFilter === "viewed" && !invite.responded && !invite.startedAt && invite.viewedAt) ||
-        (statusFilter === "not_viewed" && !invite.responded && !invite.viewedAt);
+        (statusFilter === "sent" && !invite.responded && !invite.viewedAt && invite.sentAt && invite.sendStatus !== "failed") ||
+        (statusFilter === "failed" && invite.sendStatus === "failed") ||
+        (statusFilter === "pending" && !invite.sentAt && invite.sendStatus !== "failed");
       return matchSearch && matchAdvisor && matchStatus;
     });
   }, [initialInvites, search, advisorFilter, statusFilter]);
@@ -32,7 +34,9 @@ export function StatusClient({ initialInvites }) {
   const responded = initialInvites.filter((i) => i.responded).length;
   const started = initialInvites.filter((i) => !i.responded && i.startedAt).length;
   const viewed = initialInvites.filter((i) => !i.responded && !i.startedAt && i.viewedAt).length;
-  const notViewed = initialInvites.filter((i) => !i.responded && !i.viewedAt).length;
+  const sent = initialInvites.filter((i) => !i.responded && !i.viewedAt && i.sentAt && i.sendStatus !== "failed").length;
+  const pending = initialInvites.filter((i) => !i.sentAt && i.sendStatus !== "failed").length;
+  const failed = initialInvites.filter((i) => i.sendStatus === "failed").length;
   const responseRate = total > 0 ? Math.round((responded / total) * 100) : 0;
 
   return (
@@ -42,7 +46,9 @@ export function StatusClient({ initialInvites }) {
         <MetricCard label="Taxa de resposta" value={`${responseRate}%`} caption={`${responded} de ${total} respondidos`} />
         <MetricCard label="Em preenchimento" value={String(started)} caption="abriu mas não concluiu" />
         <MetricCard label="Abriu o link" value={String(viewed)} caption="visualizou, não respondeu" />
-        <MetricCard label="Não abriu" value={String(notViewed)} caption="sem interação ainda" />
+        <MetricCard label="Enviado" value={String(sent)} caption="e-mail disparado, sem abertura" />
+        <MetricCard label="Aguardando envio" value={String(pending)} caption="ainda não disparado" />
+        {failed > 0 && <MetricCard label="Falha no envio" value={String(failed)} caption="erro ao disparar e-mail" />}
       </section>
 
       <section className="glass-card filters-card">
@@ -72,7 +78,9 @@ export function StatusClient({ initialInvites }) {
               <option value="responded">Respondida</option>
               <option value="started">Em preenchimento</option>
               <option value="viewed">Abriu o link</option>
-              <option value="not_viewed">Não abriu</option>
+              <option value="sent">Enviado</option>
+              <option value="pending">Aguardando envio</option>
+              <option value="failed">Falha no envio</option>
             </select>
           </label>
         </div>
@@ -110,8 +118,12 @@ export function StatusClient({ initialInvites }) {
                         <span className="status-badge status-started">Em preenchimento</span>
                       ) : invite.viewedAt ? (
                         <span className="status-badge status-viewed">Abriu o link</span>
+                      ) : invite.sendStatus === "failed" ? (
+                        <span className="status-badge status-failed">Falha no envio</span>
+                      ) : invite.sentAt ? (
+                        <span className="status-badge status-sent">Enviado</span>
                       ) : (
-                        <span className="status-badge status-not-viewed">Não abriu</span>
+                        <span className="status-badge status-pending">Aguardando envio</span>
                       )}
                     </td>
                   </tr>
