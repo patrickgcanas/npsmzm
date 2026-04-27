@@ -37,10 +37,11 @@ export function BulkEmailPanel({ pendingInvites }) {
     return map;
   });
 
-  const [sendingAll, setSendingAll]       = useState(false);
-  const [clearing,   setClearing]         = useState(false);
-  const [advisorFilter, setAdvisorFilter] = useState("");
-  const [search, setSearch]               = useState("");
+  const [sendingAll, setSendingAll]           = useState(false);
+  const [clearing,   setClearing]             = useState(false);
+  const [advisorFilter, setAdvisorFilter]     = useState("");
+  const [surveyStatusFilter, setSurveyStatus] = useState("");
+  const [search, setSearch]                   = useState("");
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
@@ -50,9 +51,15 @@ export function BulkEmailPanel({ pendingInvites }) {
         !q ||
         invite.clientName.toLowerCase().includes(q) ||
         (invite.clientCode || "").toLowerCase().includes(q);
-      return matchesAdvisor && matchesSearch;
+      const matchesSurveyStatus =
+        !surveyStatusFilter ||
+        (surveyStatusFilter === "pending"  && !invite.sentAt) ||
+        (surveyStatusFilter === "sent"     && invite.sentAt && !invite.viewedAt) ||
+        (surveyStatusFilter === "viewed"   && invite.viewedAt && !invite.startedAt) ||
+        (surveyStatusFilter === "started"  && invite.startedAt);
+      return matchesAdvisor && matchesSearch && matchesSurveyStatus;
     });
-  }, [pendingInvites, advisorFilter, search]);
+  }, [pendingInvites, advisorFilter, surveyStatusFilter, search]);
 
   function setStatus(id, status) {
     setStatusMap((prev) => ({ ...prev, [id]: status }));
@@ -177,6 +184,17 @@ export function BulkEmailPanel({ pendingInvites }) {
           {advisors.map((a) => (
             <option key={a} value={a}>{a}</option>
           ))}
+        </select>
+        <select
+          className="bulk-filter-select"
+          value={surveyStatusFilter}
+          onChange={(e) => setSurveyStatus(e.target.value)}
+        >
+          <option value="">Todos os status</option>
+          <option value="pending">Aguardando envio</option>
+          <option value="sent">Enviado, não abriu</option>
+          <option value="viewed">Abriu o link</option>
+          <option value="started">Em preenchimento</option>
         </select>
         <input
           className="bulk-filter-search"
