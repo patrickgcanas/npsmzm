@@ -179,7 +179,7 @@ export function HistoricoClient({ responses, advisors }) {
     });
   }, [clients, search, codeFilter, advisorFilter]);
 
-  const isFiltering = search || codeFilter || advisorFilter;
+  const isFiltering = search.trim() || codeFilter.trim() || advisorFilter;
 
   return (
     <>
@@ -213,30 +213,20 @@ export function HistoricoClient({ responses, advisors }) {
         </div>
       </section>
 
-      {!responses.length ? (
+      {!isFiltering ? (
         <section className="glass-card bulk-empty-state">
-          <p className="bulk-subtitle">Nenhuma resposta registrada ainda. O histórico aparecerá aqui após o primeiro ciclo.</p>
+          <p className="bulk-subtitle">Use os filtros acima para buscar um cliente e visualizar sua evolução.</p>
+        </section>
+      ) : filtered.length === 0 ? (
+        <section className="glass-card bulk-empty-state">
+          <p className="bulk-subtitle">Nenhum cliente encontrado para os filtros aplicados.</p>
         </section>
       ) : (
-        <>
-          <div className="panel-header" style={{ padding: "0 0 12px 0" }}>
-            <span className="muted">
-              {isFiltering ? `${filtered.length} de ${clients.length}` : clients.length} cliente{clients.length !== 1 ? "s" : ""} com histórico
-            </span>
-          </div>
-
-          {filtered.length === 0 ? (
-            <section className="glass-card bulk-empty-state">
-              <p className="bulk-subtitle">Nenhum cliente encontrado para os filtros aplicados.</p>
-            </section>
-          ) : (
-            <div className="historico-list">
-              {filtered.map((c) => (
-                <ClientCard key={c.code || c.name} client={c} />
-              ))}
-            </div>
-          )}
-        </>
+        <div className="historico-list">
+          {filtered.map((c) => (
+            <ClientCard key={c.code || c.name} client={c} />
+          ))}
+        </div>
       )}
     </>
   );
