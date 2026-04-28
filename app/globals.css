@@ -1901,3 +1901,90 @@ td {
     padding: 24px 22px 24px;
   }
 }
+
+/* ── Histórico ─────────────────────────────────────────────── */
+.historico-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.historico-card {
+  padding: 24px 28px;
+}
+
+.historico-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.historico-client-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--brand-strong);
+  margin: 0 0 6px 0;
+}
+
+.historico-client-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: var(--text-soft);
+}
+
+.historico-badges {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.historico-charts {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 0;
+  align-items: start;
+  margin-bottom: 16px;
+}
+
+.historico-chart-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.historico-chart-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-soft);
+}
+
+.historico-chart-divider {
+  width: 1px;
+  background: var(--border);
+  margin: 0 24px;
+  align-self: stretch;
+}
+
+.historico-table-wrap {
+  margin-top: 8px;
+  border-top: 1px solid var(--border);
+  padding-top: 16px;
+}
+
+@media (max-width: 640px) {
+  .historico-charts {
+    grid-template-columns: 1fr;
+  }
+  .historico-chart-divider {
+    display: none;
+  }
+  .historico-card-header {
+    flex-direction: column;
+  }
+}

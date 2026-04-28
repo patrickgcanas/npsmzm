@@ -13,6 +13,7 @@ const navItems = [
   { href: "/survey-model", label: "Modelo de Pesquisa" },
   { href: "/dashboard", label: "Dashboard" },
   { href: "/ranking", label: "Ranking" },
+  { href: "/historico", label: "Histórico" },
 ];
 
 async function handleLogout() {
