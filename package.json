@@ -27,6 +27,7 @@
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.0",
     "prisma": "^5.20.0",
+    "sharp": "^0.34.5",
     "supabase": "^2.78.1"
   },
   "prisma": {
