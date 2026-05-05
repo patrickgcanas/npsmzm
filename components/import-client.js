@@ -88,37 +88,45 @@ export function ImportClient() {
         try {
           const workbook = XLSX.read(new Uint8Array(ev.target.result), { type: "array", cellDates: true });
           const sheet = workbook.Sheets[workbook.SheetNames[0]];
-          // header:1 retorna array de arrays — não depende do nome das colunas
           const matrix = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
           if (matrix.length < 2) {
             setParseError("A planilha está vazia ou não tem dados após o cabeçalho.");
             return;
           }
-          // Localiza a linha de cabeçalho real (ex: "Account Name" do Salesforce ou "Nome do Cliente" do template)
-          // e começa a ler dados a partir da linha seguinte
-          const headerRowIndex = matrix.findIndex((row) => {
-            const first = String(row[0] ?? "").trim().toLowerCase();
-            return first === "account name" || first.startsWith("nome do cliente") || first === "nome";
-          });
-          let firstDataIndex;
-          if (headerRowIndex !== -1) {
-            firstDataIndex = headerRowIndex + 1;
-          } else {
-            // fallback: pula linhas claramente vazias
-            firstDataIndex = matrix.findIndex((row) => String(row[0] ?? "").trim());
-          }
-          if (firstDataIndex === -1 || firstDataIndex >= matrix.length) {
-            setParseError("Nenhuma linha de dados encontrada.");
+          // Busca o header em QUALQUER célula da linha (Salesforce pode ter coluna A vazia)
+          const headerRowIndex = matrix.findIndex((row) =>
+            row.some((cell) => {
+              const v = String(cell ?? "").trim().toLowerCase();
+              return v === "account name" || v.startsWith("nome do cliente") || v === "nome";
+            })
+          );
+          if (headerRowIndex === -1 || headerRowIndex >= matrix.length - 1) {
+            setParseError("Cabeçalho não encontrado. Verifique se o arquivo é um export do Salesforce.");
             return;
           }
-          const dataRows = matrix.slice(firstDataIndex).filter((row) => row.some((c) => String(c).trim()));
-          // Mapeamento posicional: A=nome, B=email, C=sigla, D=advisor, E=contractDate
+          // Mapeia nome de coluna → índice, usando normalização tolerante
+          const headerRow = matrix[headerRowIndex];
+          const colIndex = {};
+          headerRow.forEach((cell, i) => { colIndex[normalize(String(cell))] = i; });
+
+          const get = (row, ...candidates) => {
+            for (const c of candidates) {
+              const idx = colIndex[normalize(c)];
+              if (idx !== undefined) {
+                const val = row[idx];
+                return val instanceof Date ? val.toISOString() : String(val ?? "").trim();
+              }
+            }
+            return "";
+          };
+
+          const dataRows = matrix.slice(headerRowIndex + 1).filter((row) => row.some((c) => String(c).trim()));
           const mapped = dataRows.map((row) => ({
-            nome:         String(row[0] ?? "").trim(),
-            email:        String(row[1] ?? "").trim(),
-            sigla:        String(row[2] ?? "").trim(),
-            advisor:      String(row[3] ?? "").trim(),
-            contractDate: row[4] instanceof Date ? row[4].toISOString() : String(row[4] ?? "").trim() || null,
+            nome:         get(row, "Account Name", "Nome do Cliente (Apenas o primeiro nome)", "Nome do Cliente", "Nome"),
+            email:        get(row, "Person Account: Email", "E-mail", "Email"),
+            sigla:        get(row, "Sigla", "Sigla do Cliente"),
+            advisor:      get(row, "Account Owner", "Advisor responsável", "Advisor responsavel", "Advisor"),
+            contractDate: get(row, "Data Assinatura Contrato", "Data do Contrato") || null,
           }));
           setRows(mapped);
         } catch {
