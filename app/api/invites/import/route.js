@@ -7,6 +7,23 @@ function generateToken() {
   return randomBytes(20).toString("hex");
 }
 
+function normalize(s) {
+  return String(s ?? "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").trim();
+}
+
+// Aceita ISO, DD/MM/YYYY e MM/DD/YYYY
+function parseDate(str) {
+  if (!str) return null;
+  const s = String(str).trim();
+  const br = s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (br) {
+    const d = new Date(`${br[3]}-${br[2].padStart(2, "0")}-${br[1].padStart(2, "0")}`);
+    return isNaN(d.getTime()) ? null : d;
+  }
+  const d = new Date(s);
+  return isNaN(d.getTime()) ? null : d;
+}
+
 export async function POST(request) {
   const { rows } = await request.json();
 
@@ -22,7 +39,7 @@ export async function POST(request) {
     const clientCode = row.sigla?.trim() || null;
     const advisor = row.advisor?.trim();
     const relationshipNote = row.contexto?.trim() || null;
-    const contractDate = row.contractDate ? new Date(row.contractDate) : null;
+    const contractDate = parseDate(row.contractDate);
 
     if (!clientName || !advisor) {
       results.errors.push(`Linha ignorada: nome ou advisor ausente (${clientName || "?"}).`);
@@ -30,10 +47,10 @@ export async function POST(request) {
       continue;
     }
 
-    const normalize = (s) =>
-      String(s ?? "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim();
-
-    const matchedAdvisor = advisors.find((a) => normalize(a) === normalize(advisor));
+    // Tenta match exato primeiro, depois match por palavras (tolera nomes completos do Salesforce)
+    const matchedAdvisor =
+      advisors.find((a) => normalize(a) === normalize(advisor)) ||
+      advisors.find((a) => normalize(a).split(" ").every((w) => normalize(advisor).includes(w)));
 
     if (!matchedAdvisor) {
       results.errors.push(`Advisor inválido: "${advisor}" para cliente ${clientName}. Verifique o nome exato.`);
