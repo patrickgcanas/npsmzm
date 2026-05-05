@@ -38,10 +38,11 @@ function mapSalesforceRow(rawRow) {
   };
 
   return {
-    nome:    find("Nome do Cliente (Apenas o primeiro nome)", "Nome do Cliente", "Nome", "name"),
-    email:   find("E-mail", "Email", "e-mail"),
-    sigla:   find("Sigla do Cliente", "Sigla", "codigo", "code"),
-    advisor: find("Advisor responsável", "Advisor responsavel", "Advisor", "consultor"),
+    nome:         find("Nome do Cliente (Apenas o primeiro nome)", "Nome do Cliente", "Nome", "name", "account name"),
+    email:        find("E-mail", "Email", "e-mail", "person account: email"),
+    sigla:        find("Sigla do Cliente", "Sigla", "codigo", "code"),
+    advisor:      find("Advisor responsável", "Advisor responsavel", "Advisor", "consultor", "account owner"),
+    contractDate: find("Data Assinatura Contrato", "Data do Contrato", "Contract Date", "data contrato"),
   };
 }
 
@@ -85,7 +86,7 @@ export function ImportClient() {
       const reader = new FileReader();
       reader.onload = (ev) => {
         try {
-          const workbook = XLSX.read(new Uint8Array(ev.target.result), { type: "array" });
+          const workbook = XLSX.read(new Uint8Array(ev.target.result), { type: "array", cellDates: true });
           const sheet = workbook.Sheets[workbook.SheetNames[0]];
           // header:1 retorna array de arrays — não depende do nome das colunas
           const matrix = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
@@ -104,12 +105,13 @@ export function ImportClient() {
             return;
           }
           const dataRows = matrix.slice(firstDataIndex).filter((row) => row.some((c) => String(c).trim()));
-          // Mapeamento posicional: A=nome, B=email, C=sigla, D=advisor
+          // Mapeamento posicional: A=nome, B=email, C=sigla, D=advisor, E=contractDate
           const mapped = dataRows.map((row) => ({
-            nome:    String(row[0] ?? "").trim(),
-            email:   String(row[1] ?? "").trim(),
-            sigla:   String(row[2] ?? "").trim(),
-            advisor: String(row[3] ?? "").trim(),
+            nome:         String(row[0] ?? "").trim(),
+            email:        String(row[1] ?? "").trim(),
+            sigla:        String(row[2] ?? "").trim(),
+            advisor:      String(row[3] ?? "").trim(),
+            contractDate: row[4] instanceof Date ? row[4].toISOString() : String(row[4] ?? "").trim() || null,
           }));
           setRows(mapped);
         } catch {

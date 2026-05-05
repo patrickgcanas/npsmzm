@@ -135,66 +135,6 @@ export default async function HomePage() {
         </article>
       </section>
 
-      <section className="elos-section glass-card">
-        <span className="section-label">Elos MZM</span>
-        <h2>Os princípios que conectam propósito, conduta e relação com o cliente.</h2>
-        <p className="elos-intro">
-          Os Elos da MZM reforçam como a empresa deseja ser percebida na prática: com lealdade, clareza e visão de
-          longo prazo. Eles funcionam como referência para o discurso consultivo, para a qualidade do serviço e para a
-          forma como cada cliente é acompanhado ao longo da jornada.
-        </p>
-
-        <div className="elos-grid">
-          <article className="elo-card">
-            <strong>Fidúcia</strong>
-            <p>
-              Representa a confiança como fundamento da relação. Para o consultor, é o compromisso de agir com
-              responsabilidade, lealdade e coerência em cada recomendação.
-            </p>
-          </article>
-          <article className="elo-card">
-            <strong>Transparência</strong>
-            <p>
-              Reforça a importância da clareza nas conversas, da franqueza nas orientações e da integridade nas
-              decisões. Relações duradouras exigem compreensão mútua e comunicação sem ruído.
-            </p>
-          </article>
-          <article className="elo-card">
-            <strong>Fortuna</strong>
-            <p>
-              Aponta para a construção de prosperidade com visão de futuro. Mais do que resultado financeiro, este Elo
-              conecta patrimônio, propósito e legado das famílias atendidas pela MZM Wealth.
-            </p>
-          </article>
-        </div>
-
-        <article className="manifesto-card">
-          <span className="section-label">Manifesto MZM</span>
-          <p className="manifesto-lead">
-            Na MZM Wealth, acreditamos que a confiança é o alicerce sobre o qual construímos relacionamentos sólidos.
-            Somos impulsionados por um compromisso inabalável com a transparência e a integridade, proporcionando uma
-            base confiável para o alcance de objetivos e sonhos.
-          </p>
-          <div className="manifesto-columns">
-            <p className="manifesto-body">
-              Nosso foco central no cliente é a essência do que fazemos. Estratégias e decisões são moldadas através
-              de um entendimento profundo das necessidades individuais de cada pessoa ou família que auxiliamos.
-            </p>
-            <p className="manifesto-body">
-              Buscamos entregar a todos que estão a nossa volta a tranquilidade de terem um guia experiente e
-              confiável, sempre em sintonia com vivências, histórias e objetivos.
-            </p>
-            <p className="manifesto-body">
-              Acreditamos que o sucesso é uma jornada compartilhada. Estamos dedicados a superar expectativas,
-              construir confiança e sustentar um futuro financeiro sólido e próspero.
-            </p>
-            <p className="manifesto-body">
-              Hoje temos um propósito muito claro: caminhar lado a lado na construção do legado daqueles que nos
-              cercam.
-            </p>
-          </div>
-        </article>
-      </section>
     </>
   );
 }

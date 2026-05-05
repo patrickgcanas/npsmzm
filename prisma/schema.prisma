@@ -23,6 +23,7 @@ model SurveyInvite {
   sentAt           DateTime?
   sendStatus       String?         @default("pending")
   sendError        String?
+  contractDate     DateTime?
   response         SurveyResponse?
 }
 

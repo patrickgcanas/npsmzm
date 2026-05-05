@@ -22,6 +22,7 @@ export async function POST(request) {
     const clientCode = row.sigla?.trim() || null;
     const advisor = row.advisor?.trim();
     const relationshipNote = row.contexto?.trim() || null;
+    const contractDate = row.contractDate ? new Date(row.contractDate) : null;
 
     if (!clientName || !advisor) {
       results.errors.push(`Linha ignorada: nome ou advisor ausente (${clientName || "?"}).`);
@@ -49,6 +50,7 @@ export async function POST(request) {
           clientCode,
           advisor: matchedAdvisor,
           relationshipNote,
+          contractDate,
         },
       });
       results.created++;

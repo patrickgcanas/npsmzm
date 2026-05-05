@@ -9,9 +9,18 @@ export function StatusClient({ initialInvites }) {
   const [search, setSearch] = useState("");
   const [advisorFilter, setAdvisorFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
+  const [contractFrom, setContractFrom] = useState("");
+  const [contractTo, setContractTo] = useState("");
+  const [sentFrom, setSentFrom] = useState("");
+  const [sentTo, setSentTo] = useState("");
 
   const filtered = useMemo(() => {
     const term = search.trim().toLowerCase();
+    const contractStart = contractFrom ? new Date(contractFrom).getTime() : null;
+    const contractEnd   = contractTo   ? new Date(contractTo + "T23:59:59").getTime() : null;
+    const sentStart     = sentFrom     ? new Date(sentFrom).getTime() : null;
+    const sentEnd       = sentTo       ? new Date(sentTo + "T23:59:59").getTime() : null;
+
     return initialInvites.filter((invite) => {
       const matchSearch =
         !term ||
@@ -26,9 +35,19 @@ export function StatusClient({ initialInvites }) {
         (statusFilter === "sent" && !invite.responded && !invite.viewedAt && invite.sentAt && invite.sendStatus !== "failed") ||
         (statusFilter === "failed" && invite.sendStatus === "failed") ||
         (statusFilter === "pending" && !invite.sentAt && invite.sendStatus !== "failed");
-      return matchSearch && matchAdvisor && matchStatus;
+
+      const contractTs = invite.contractDate ? new Date(invite.contractDate).getTime() : null;
+      const matchContractFrom = !contractStart || (contractTs && contractTs >= contractStart);
+      const matchContractTo   = !contractEnd   || (contractTs && contractTs <= contractEnd);
+
+      const sentTs = invite.sentAt ? new Date(invite.sentAt).getTime() : null;
+      const matchSentFrom = !sentStart || (sentTs && sentTs >= sentStart);
+      const matchSentTo   = !sentEnd   || (sentTs && sentTs <= sentEnd);
+
+      return matchSearch && matchAdvisor && matchStatus &&
+        matchContractFrom && matchContractTo && matchSentFrom && matchSentTo;
     });
-  }, [initialInvites, search, advisorFilter, statusFilter]);
+  }, [initialInvites, search, advisorFilter, statusFilter, contractFrom, contractTo, sentFrom, sentTo]);
 
   const total = initialInvites.length;
   const responded = initialInvites.filter((i) => i.responded).length;
@@ -83,6 +102,22 @@ export function StatusClient({ initialInvites }) {
               <option value="failed">Falha no envio</option>
             </select>
           </label>
+          <label>
+            Contrato — de
+            <input type="date" value={contractFrom} onChange={(e) => setContractFrom(e.target.value)} />
+          </label>
+          <label>
+            Contrato — até
+            <input type="date" value={contractTo} onChange={(e) => setContractTo(e.target.value)} />
+          </label>
+          <label>
+            Primeiro envio — de
+            <input type="date" value={sentFrom} onChange={(e) => setSentFrom(e.target.value)} />
+          </label>
+          <label>
+            Primeiro envio — até
+            <input type="date" value={sentTo} onChange={(e) => setSentTo(e.target.value)} />
+          </label>
         </div>
       </section>
 
@@ -99,6 +134,7 @@ export function StatusClient({ initialInvites }) {
                 <th>Cliente</th>
                 <th>Sigla</th>
                 <th>Advisor</th>
+                <th>Data Contrato</th>
                 <th>Criado em</th>
                 <th>Status</th>
               </tr>
@@ -110,6 +146,7 @@ export function StatusClient({ initialInvites }) {
                     <td>{invite.clientName}</td>
                     <td>{invite.clientCode || "—"}</td>
                     <td>{invite.advisor}</td>
+                    <td>{invite.contractDate ? new Date(invite.contractDate).toLocaleDateString("pt-BR") : "—"}</td>
                     <td>{new Date(invite.createdAt).toLocaleDateString("pt-BR")}</td>
                     <td>
                       {invite.responded ? (
@@ -130,7 +167,7 @@ export function StatusClient({ initialInvites }) {
                 ))
               ) : (
                 <tr>
-                  <td className="muted" colSpan="5">
+                  <td className="muted" colSpan="6">
                     Nenhum convite encontrado para a busca realizada.
                   </td>
                 </tr>
