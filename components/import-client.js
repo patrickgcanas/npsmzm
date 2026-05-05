@@ -94,13 +94,20 @@ export function ImportClient() {
             setParseError("A planilha está vazia ou não tem dados após o cabeçalho.");
             return;
           }
-          // Encontra a primeira linha que parece ser dado real (não vazia e não header)
-          const isHeaderRow = (row) => {
+          // Localiza a linha de cabeçalho real (ex: "Account Name" do Salesforce ou "Nome do Cliente" do template)
+          // e começa a ler dados a partir da linha seguinte
+          const headerRowIndex = matrix.findIndex((row) => {
             const first = String(row[0] ?? "").trim().toLowerCase();
-            return !first || first.startsWith("nome") || first === "cliente";
-          };
-          const firstDataIndex = matrix.findIndex((row) => !isHeaderRow(row));
-          if (firstDataIndex === -1) {
+            return first === "account name" || first.startsWith("nome do cliente") || first === "nome";
+          });
+          let firstDataIndex;
+          if (headerRowIndex !== -1) {
+            firstDataIndex = headerRowIndex + 1;
+          } else {
+            // fallback: pula linhas claramente vazias
+            firstDataIndex = matrix.findIndex((row) => String(row[0] ?? "").trim());
+          }
+          if (firstDataIndex === -1 || firstDataIndex >= matrix.length) {
             setParseError("Nenhuma linha de dados encontrada.");
             return;
           }
@@ -121,15 +128,27 @@ export function ImportClient() {
       reader.readAsArrayBuffer(file);
     } else {
       Papa.parse(file, {
-        header: true,
+        header: false,
         skipEmptyLines: true,
-        transformHeader: (h) => h.trim(),
         complete: ({ data, errors }) => {
           if (errors.length) {
             setParseError("Erro ao ler o arquivo. Verifique se é um CSV válido.");
             return;
           }
-          setRows(data.map(mapSalesforceRow));
+          // Localiza a linha de cabeçalho e usa o mapeamento por nome de coluna (tolerante a metadados do Salesforce)
+          const headerIdx = data.findIndex((row) => {
+            const first = String(row[0] ?? "").trim().toLowerCase();
+            return first === "account name" || first.startsWith("nome do cliente") || first === "nome";
+          });
+          const dataStart = headerIdx !== -1 ? headerIdx + 1 : 0;
+          const headers = headerIdx !== -1 ? data[headerIdx].map((h) => String(h).trim()) : [];
+          const dataRows = data.slice(dataStart).filter((row) => row.some((c) => String(c).trim()));
+          const mapped = dataRows.map((row) => {
+            const obj = {};
+            headers.forEach((h, i) => { obj[h] = String(row[i] ?? "").trim(); });
+            return mapSalesforceRow(obj);
+          });
+          setRows(mapped);
         },
       });
     }
