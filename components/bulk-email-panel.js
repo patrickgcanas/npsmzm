@@ -64,10 +64,10 @@ export function BulkEmailPanel({ pendingInvites }) {
         (surveyStatusFilter === "sent"     && invite.sentAt && !invite.viewedAt) ||
         (surveyStatusFilter === "viewed"   && invite.viewedAt && !invite.startedAt) ||
         (surveyStatusFilter === "started"  && invite.startedAt);
-      const inviteDate = new Date(invite.createdAt);
+      const inviteDate = invite.contractDate ? new Date(invite.contractDate) : null;
       const matchesDate =
-        (!from || inviteDate >= from) &&
-        (!to   || inviteDate <= to);
+        (!from || (inviteDate && inviteDate >= from)) &&
+        (!to   || (inviteDate && inviteDate <= to));
       return matchesAdvisor && matchesSearch && matchesSurveyStatus && matchesDate;
     });
   }, [pendingInvites, advisorFilter, surveyStatusFilter, search, dateFrom, dateTo]);
@@ -291,7 +291,7 @@ export function BulkEmailPanel({ pendingInvites }) {
                 <th>Sigla</th>
                 <th>E-mail</th>
                 <th>Consultor</th>
-                <th>Cadastro</th>
+                <th>Contrato</th>
                 <th>Status</th>
                 <th></th>
               </tr>
@@ -319,7 +319,7 @@ export function BulkEmailPanel({ pendingInvites }) {
                     <td><code className="bulk-code">{invite.clientCode || "—"}</code></td>
                     <td>{invite.clientEmail || <em className="bulk-no-email">sem e-mail</em>}</td>
                     <td>{invite.advisor}</td>
-                    <td className="bulk-date">{new Date(invite.createdAt).toLocaleDateString("pt-BR")}</td>
+                    <td className="bulk-date">{invite.contractDate ? new Date(invite.contractDate).toLocaleDateString("pt-BR") : "—"}</td>
                     <td><StatusBadge status={status} /></td>
                     <td>
                       <button
