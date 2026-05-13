@@ -42,7 +42,7 @@ function mapSalesforceRow(rawRow) {
     email:        find("E-mail", "Email", "e-mail", "person account: email"),
     sigla:        find("Sigla do Cliente", "Sigla", "codigo", "code"),
     advisor:      find("Advisor responsável", "Advisor responsavel", "Advisor", "consultor", "account owner"),
-    contractDate: find("Data Assinatura Contrato", "Data do Contrato", "Contract Date", "data contrato"),
+    contractDate: find("Data Assinatura Contrato", "Data do Contrato", "Contract Date", "data contrato", "Data", "data"),
   };
 }
 
@@ -126,7 +126,7 @@ export function ImportClient() {
             email:        get(row, "Person Account: Email", "E-mail", "Email"),
             sigla:        get(row, "Sigla", "Sigla do Cliente"),
             advisor:      get(row, "Account Owner", "Advisor responsável", "Advisor responsavel", "Advisor"),
-            contractDate: get(row, "Data Assinatura Contrato", "Data do Contrato") || null,
+            contractDate: get(row, "Data Assinatura Contrato", "Data do Contrato", "Data") || null,
           }));
           setRows(mapped);
         } catch {
@@ -236,6 +236,7 @@ export function ImportClient() {
                       <th>E-mail</th>
                       <th>Sigla</th>
                       <th>Advisor</th>
+                      <th>Data contrato</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -245,6 +246,7 @@ export function ImportClient() {
                         <td>{row.email || "—"}</td>
                         <td>{row.sigla || "—"}</td>
                         <td>{row.advisor || "—"}</td>
+                        <td>{row.contractDate ? String(row.contractDate).slice(0, 10) : "—"}</td>
                       </tr>
                     ))}
                     {rows.length > 5 && (
