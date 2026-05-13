@@ -42,9 +42,15 @@ export function BulkEmailPanel({ pendingInvites }) {
   const [advisorFilter, setAdvisorFilter]     = useState("");
   const [surveyStatusFilter, setSurveyStatus] = useState("");
   const [search, setSearch]                   = useState("");
+  const [dateFrom, setDateFrom]               = useState("");
+  const [dateTo, setDateTo]                   = useState("");
+  const [selected, setSelected]               = useState(new Set());
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim();
+    const from = dateFrom ? new Date(dateFrom) : null;
+    const to   = dateTo   ? new Date(dateTo + "T23:59:59") : null;
+
     return pendingInvites.filter((invite) => {
       const matchesAdvisor = !advisorFilter || invite.advisor === advisorFilter;
       const matchesSearch =
@@ -58,9 +64,48 @@ export function BulkEmailPanel({ pendingInvites }) {
         (surveyStatusFilter === "sent"     && invite.sentAt && !invite.viewedAt) ||
         (surveyStatusFilter === "viewed"   && invite.viewedAt && !invite.startedAt) ||
         (surveyStatusFilter === "started"  && invite.startedAt);
-      return matchesAdvisor && matchesSearch && matchesSurveyStatus;
+      const inviteDate = new Date(invite.createdAt);
+      const matchesDate =
+        (!from || inviteDate >= from) &&
+        (!to   || inviteDate <= to);
+      return matchesAdvisor && matchesSearch && matchesSurveyStatus && matchesDate;
     });
-  }, [pendingInvites, advisorFilter, surveyStatusFilter, search]);
+  }, [pendingInvites, advisorFilter, surveyStatusFilter, search, dateFrom, dateTo]);
+
+  const eligibleFiltered = filtered.filter((inv) => {
+    const s = statusMap[inv.id];
+    return (s === "pending" || s === "failed") && inv.clientEmail;
+  });
+
+  const selectedEligible = eligibleFiltered.filter((inv) => selected.has(inv.id));
+
+  const allVisibleSelected =
+    eligibleFiltered.length > 0 &&
+    eligibleFiltered.every((inv) => selected.has(inv.id));
+
+  function toggleSelectAll() {
+    if (allVisibleSelected) {
+      setSelected((prev) => {
+        const next = new Set(prev);
+        eligibleFiltered.forEach((inv) => next.delete(inv.id));
+        return next;
+      });
+    } else {
+      setSelected((prev) => {
+        const next = new Set(prev);
+        eligibleFiltered.forEach((inv) => next.add(inv.id));
+        return next;
+      });
+    }
+  }
+
+  function toggleSelect(id) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }
 
   function setStatus(id, status) {
     setStatusMap((prev) => ({ ...prev, [id]: status }));
@@ -81,35 +126,28 @@ export function BulkEmailPanel({ pendingInvites }) {
     }
   }
 
-  async function handleSendAll() {
-    const eligibleIds = filtered
-      .filter((inv) => {
-        const s = statusMap[inv.id];
-        return (s === "pending" || s === "failed") && inv.clientEmail;
-      })
-      .map((inv) => inv.id);
-
-    if (!eligibleIds.length) return;
-
-    if (!confirm(`Enviar e-mail para ${eligibleIds.length} cliente(s)? Esta ação não pode ser desfeita.`)) return;
+  async function handleSendBatch(ids, label) {
+    if (!ids.length) return;
+    if (!confirm(`Enviar e-mail para ${ids.length} cliente(s) ${label}? Esta ação não pode ser desfeita.`)) return;
 
     setSendingAll(true);
-    eligibleIds.forEach((id) => setStatus(id, "sending"));
+    ids.forEach((id) => setStatus(id, "sending"));
 
     try {
       const res  = await fetch("/api/invites/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ids: eligibleIds }),
+        body: JSON.stringify({ ids }),
       });
       const { results } = await res.json();
       results?.forEach((r) => {
         if (r.id) setStatus(r.id, r.success ? "sent" : "failed");
       });
     } catch {
-      eligibleIds.forEach((id) => setStatus(id, "failed"));
+      ids.forEach((id) => setStatus(id, "failed"));
     } finally {
       setSendingAll(false);
+      setSelected(new Set());
     }
   }
 
@@ -124,13 +162,9 @@ export function BulkEmailPanel({ pendingInvites }) {
     }
   }
 
-  const total        = pendingInvites.length;
-  const sentCount    = Object.values(statusMap).filter((s) => s === "sent").length;
-  const isFiltering  = advisorFilter || search.trim();
-  const eligibleCount = filtered.filter((inv) => {
-    const s = statusMap[inv.id];
-    return (s === "pending" || s === "failed") && inv.clientEmail;
-  }).length;
+  const total       = pendingInvites.length;
+  const sentCount   = Object.values(statusMap).filter((s) => s === "sent").length;
+  const isFiltering = advisorFilter || search.trim() || dateFrom || dateTo;
 
   if (total === 0) {
     return (
@@ -148,7 +182,7 @@ export function BulkEmailPanel({ pendingInvites }) {
         <div>
           <h2>Envio em lote</h2>
           <p className="bulk-subtitle">
-            Envie individualmente por linha ou use <strong>Enviar todos</strong> para disparar em lote.
+            Selecione clientes e use <strong>Enviar selecionados</strong>, ou envie todos os elegíveis de uma vez.
             {sentCount > 0 && (
               <span className="bulk-progress"> {sentCount} de {total} enviado{sentCount !== 1 ? "s" : ""}.</span>
             )}
@@ -158,13 +192,23 @@ export function BulkEmailPanel({ pendingInvites }) {
           <span className="status-badge">
             {isFiltering ? `${filtered.length} de ${total}` : total} pendente{total !== 1 ? "s" : ""}
           </span>
-          <button
-            className="button button-primary button-sm"
-            disabled={sendingAll || eligibleCount === 0}
-            onClick={handleSendAll}
-          >
-            {sendingAll ? "Enviando…" : `Enviar todos (${eligibleCount})`}
-          </button>
+          {selected.size > 0 ? (
+            <button
+              className="button button-primary button-sm"
+              disabled={sendingAll || selectedEligible.length === 0}
+              onClick={() => handleSendBatch(selectedEligible.map((inv) => inv.id), "selecionados")}
+            >
+              {sendingAll ? "Enviando…" : `Enviar selecionados (${selectedEligible.length})`}
+            </button>
+          ) : (
+            <button
+              className="button button-primary button-sm"
+              disabled={sendingAll || eligibleFiltered.length === 0}
+              onClick={() => handleSendBatch(eligibleFiltered.map((inv) => inv.id), "visíveis")}
+            >
+              {sendingAll ? "Enviando…" : `Enviar todos (${eligibleFiltered.length})`}
+            </button>
+          )}
           <button
             className="button button-ghost button-sm"
             disabled={clearing}
@@ -204,6 +248,28 @@ export function BulkEmailPanel({ pendingInvites }) {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
+        <input
+          type="date"
+          className="bulk-filter-date"
+          title="Data de cadastro — de"
+          value={dateFrom}
+          onChange={(e) => setDateFrom(e.target.value)}
+        />
+        <input
+          type="date"
+          className="bulk-filter-date"
+          title="Data de cadastro — até"
+          value={dateTo}
+          onChange={(e) => setDateTo(e.target.value)}
+        />
+        {(dateFrom || dateTo) && (
+          <button
+            className="button button-ghost button-sm"
+            onClick={() => { setDateFrom(""); setDateTo(""); }}
+          >
+            Limpar datas
+          </button>
+        )}
       </div>
 
       <div className="table-wrap">
@@ -213,10 +279,19 @@ export function BulkEmailPanel({ pendingInvites }) {
           <table>
             <thead>
               <tr>
+                <th>
+                  <input
+                    type="checkbox"
+                    checked={allVisibleSelected}
+                    onChange={toggleSelectAll}
+                    title="Selecionar todos visíveis elegíveis"
+                  />
+                </th>
                 <th>Cliente</th>
                 <th>Sigla</th>
                 <th>E-mail</th>
                 <th>Consultor</th>
+                <th>Cadastro</th>
                 <th>Status</th>
                 <th></th>
               </tr>
@@ -227,13 +302,24 @@ export function BulkEmailPanel({ pendingInvites }) {
                 const isSending = status === "sending";
                 const isSent    = status === "sent";
                 const noEmail   = !invite.clientEmail;
+                const isEligible = (status === "pending" || status === "failed") && !noEmail;
+                const isChecked  = selected.has(invite.id);
 
                 return (
-                  <tr key={invite.id} className={isSent ? "bulk-row-done" : ""}>
+                  <tr key={invite.id} className={isSent ? "bulk-row-done" : isChecked ? "bulk-row-selected" : ""}>
+                    <td>
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        disabled={!isEligible}
+                        onChange={() => toggleSelect(invite.id)}
+                      />
+                    </td>
                     <td>{invite.clientName}</td>
                     <td><code className="bulk-code">{invite.clientCode || "—"}</code></td>
                     <td>{invite.clientEmail || <em className="bulk-no-email">sem e-mail</em>}</td>
                     <td>{invite.advisor}</td>
+                    <td className="bulk-date">{new Date(invite.createdAt).toLocaleDateString("pt-BR")}</td>
                     <td><StatusBadge status={status} /></td>
                     <td>
                       <button
