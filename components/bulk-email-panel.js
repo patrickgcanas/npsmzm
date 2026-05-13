@@ -319,7 +319,7 @@ export function BulkEmailPanel({ pendingInvites }) {
                     <td><code className="bulk-code">{invite.clientCode || "—"}</code></td>
                     <td>{invite.clientEmail || <em className="bulk-no-email">sem e-mail</em>}</td>
                     <td>{invite.advisor}</td>
-                    <td className="bulk-date">{invite.contractDate ? new Date(invite.contractDate).toLocaleDateString("pt-BR") : "—"}</td>
+                    <td className="bulk-date">{invite.contractDate ? new Date(invite.contractDate).toLocaleDateString("pt-BR", { timeZone: "UTC" }) : "—"}</td>
                     <td><StatusBadge status={status} /></td>
                     <td>
                       <button

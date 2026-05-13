@@ -246,7 +246,7 @@ export function ImportClient() {
                         <td>{row.email || "—"}</td>
                         <td>{row.sigla || "—"}</td>
                         <td>{row.advisor || "—"}</td>
-                        <td>{row.contractDate ? String(row.contractDate).slice(0, 10) : "—"}</td>
+                        <td>{row.contractDate ? new Date(row.contractDate).toLocaleDateString("pt-BR", { timeZone: "UTC" }) : "—"}</td>
                       </tr>
                     ))}
                     {rows.length > 5 && (
