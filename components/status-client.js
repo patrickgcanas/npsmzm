@@ -136,6 +136,7 @@ export function StatusClient({ initialInvites }) {
                 <th>Advisor</th>
                 <th>Data Contrato</th>
                 <th>Criado em</th>
+                <th>Respondida em</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -146,8 +147,9 @@ export function StatusClient({ initialInvites }) {
                     <td>{invite.clientName}</td>
                     <td>{invite.clientCode || "—"}</td>
                     <td>{invite.advisor}</td>
-                    <td>{invite.contractDate ? new Date(invite.contractDate).toLocaleDateString("pt-BR") : "—"}</td>
+                    <td>{invite.contractDate ? new Date(invite.contractDate).toLocaleDateString("pt-BR", { timeZone: "UTC" }) : "—"}</td>
                     <td>{new Date(invite.createdAt).toLocaleDateString("pt-BR")}</td>
+                    <td>{invite.respondedAt ? new Date(invite.respondedAt).toLocaleDateString("pt-BR") : "—"}</td>
                     <td>
                       {invite.responded ? (
                         <span className="status-badge status-responded">Respondida</span>
@@ -167,7 +169,7 @@ export function StatusClient({ initialInvites }) {
                 ))
               ) : (
                 <tr>
-                  <td className="muted" colSpan="6">
+                  <td className="muted" colSpan="7">
                     Nenhum convite encontrado para a busca realizada.
                   </td>
                 </tr>

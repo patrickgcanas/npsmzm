@@ -5,6 +5,22 @@ import { OfficeOverviewChart } from "@/components/office-overview";
 import { computeMetrics, getPillarAverages, getTrendData } from "@/lib/analytics";
 import { getHomeSummary } from "@/lib/data";
 
+function getResendReminders(responses) {
+  const today = new Date();
+  return responses
+    .map((r) => {
+      const isPromoter = r.npsScore >= 9;
+      const months = isPromoter ? 12 : 6;
+      const respondedAt = new Date(r.createdAt);
+      const resendAt = new Date(respondedAt);
+      resendAt.setMonth(resendAt.getMonth() + months);
+      const daysUntil = Math.ceil((resendAt - today) / (1000 * 60 * 60 * 24));
+      return { ...r, resendAt, daysUntil, isPromoter };
+    })
+    .filter((r) => r.daysUntil <= 30)
+    .sort((a, b) => a.daysUntil - b.daysUntil);
+}
+
 export const dynamic = "force-dynamic";
 
 function formatSigned(value) {
@@ -16,6 +32,7 @@ export default async function HomePage() {
   const metrics = computeMetrics(responses);
   const pillars = getPillarAverages(responses);
   const trendData = getTrendData(responses);
+  const reminders = getResendReminders(responses);
 
   return (
     <>
@@ -71,6 +88,56 @@ export default async function HomePage() {
           <OfficeOverviewChart metrics={metrics} trendData={trendData} />
         </div>
       </section>
+
+      {reminders.length > 0 && (
+        <section className="glass-card reminder-card">
+          <div className="panel-header">
+            <div>
+              <span className="section-label">Lembrete de reenvio</span>
+              <h2 style={{ marginTop: 4 }}>Clientes com pesquisa a reenviar</h2>
+            </div>
+            <Link className="button button-primary button-sm" href="/send">
+              Ir para Enviar
+            </Link>
+          </div>
+          <div className="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Advisor</th>
+                  <th>NPS anterior</th>
+                  <th>Perfil</th>
+                  <th>Respondeu em</th>
+                  <th>Reenviar em</th>
+                  <th>Situação</th>
+                </tr>
+              </thead>
+              <tbody>
+                {reminders.map((r) => (
+                  <tr key={r.id}>
+                    <td>{r.clientName}</td>
+                    <td>{r.advisor}</td>
+                    <td>{r.npsScore}</td>
+                    <td>
+                      <span className={`reminder-badge ${r.isPromoter ? "reminder-promoter" : r.npsScore >= 7 ? "reminder-neutral" : "reminder-detractor"}`}>
+                        {r.isPromoter ? "Promotor" : r.npsScore >= 7 ? "Neutro" : "Detrator"}
+                      </span>
+                    </td>
+                    <td>{new Date(r.createdAt).toLocaleDateString("pt-BR")}</td>
+                    <td>{r.resendAt.toLocaleDateString("pt-BR")}</td>
+                    <td>
+                      <span className={`reminder-badge ${r.daysUntil <= 0 ? "reminder-overdue" : "reminder-soon"}`}>
+                        {r.daysUntil <= 0 ? "Vencido" : `Em ${r.daysUntil} dia${r.daysUntil !== 1 ? "s" : ""}`}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
 
       <section className="advisor-layout">
         <article className="glass-card advisor-guide-card">

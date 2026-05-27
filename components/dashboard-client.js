@@ -341,6 +341,7 @@ export function DashboardClient({ initialResponses }) {
                 <th>Advisor</th>
                 <th>CSAT</th>
                 <th>NPS</th>
+                <th>Respondida em</th>
                 <th>Comentário</th>
               </tr>
             </thead>
@@ -357,13 +358,14 @@ export function DashboardClient({ initialResponses }) {
                         <td>{response.advisor}</td>
                         <td>{responseCsatPercent(response)}%</td>
                         <td>{response.npsScore}</td>
+                        <td>{new Date(response.createdAt).toLocaleDateString("pt-BR")}</td>
                         <td>{comment}</td>
                       </tr>
                     );
                   })}
                   {filtered.length > 10 && (
                     <tr>
-                      <td className="muted" colSpan="5">
+                      <td className="muted" colSpan="6">
                         Exibindo 10 de {filtered.length} respostas. Use os filtros para refinar.
                       </td>
                     </tr>
@@ -371,7 +373,7 @@ export function DashboardClient({ initialResponses }) {
                 </>
               ) : (
                 <tr>
-                  <td className="muted" colSpan="5">
+                  <td className="muted" colSpan="6">
                     Nenhuma resposta encontrada para os filtros aplicados.
                   </td>
                 </tr>

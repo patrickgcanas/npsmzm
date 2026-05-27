@@ -742,6 +742,24 @@ td,
   margin-top: 28px;
 }
 
+.reminder-card {
+  margin-top: 28px;
+}
+
+.reminder-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 99px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.reminder-promoter  { background: #d1fae5; color: #065f46; }
+.reminder-neutral   { background: #fef9c3; color: #78350f; }
+.reminder-detractor { background: #fee2e2; color: #991b1b; }
+.reminder-overdue   { background: #fee2e2; color: #991b1b; }
+.reminder-soon      { background: #fef3c7; color: #92400e; }
+
 .guide-steps {
   display: grid;
   gap: 14px;
