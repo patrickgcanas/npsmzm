@@ -760,6 +760,26 @@ td,
 .reminder-overdue   { background: #fee2e2; color: #991b1b; }
 .reminder-soon      { background: #fef3c7; color: #92400e; }
 
+.send-history {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.send-chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.send-chip-sent    { background: #f1f5f9; color: #475569; }
+.send-chip-viewed  { background: #dbeafe; color: #1e40af; }
+.send-chip-started { background: #fef9c3; color: #78350f; }
+.send-chip-none    { color: var(--text-soft); font-size: 0.85rem; }
+
 .guide-steps {
   display: grid;
   gap: 14px;

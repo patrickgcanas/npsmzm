@@ -25,6 +25,17 @@ model SurveyInvite {
   sendError        String?
   contractDate     DateTime?
   response         SurveyResponse?
+  sends            SurveyInviteSend[]
+}
+
+model SurveyInviteSend {
+  id         String       @id @default(cuid())
+  inviteId   String
+  invite     SurveyInvite @relation(fields: [inviteId], references: [id], onDelete: Cascade)
+  sendNumber Int
+  sentAt     DateTime     @default(now())
+  viewedAt   DateTime?
+  startedAt  DateTime?
 }
 
 model SurveyResponse {

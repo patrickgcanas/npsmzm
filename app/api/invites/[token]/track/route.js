@@ -16,10 +16,22 @@ export async function POST(request, { params }) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  // Only set if not already recorded
+  // Update invite field on first occurrence only (keeps backward-compat metrics)
   if (!invite[field]) {
     await prisma.surveyInvite.update({
       where: { token },
+      data: { [field]: new Date() },
+    });
+  }
+
+  // Always update the latest send record so per-send tracking reflects current engagement
+  const latestSend = await prisma.surveyInviteSend.findFirst({
+    where: { inviteId: invite.id },
+    orderBy: { sendNumber: "desc" },
+  });
+  if (latestSend && !latestSend[field]) {
+    await prisma.surveyInviteSend.update({
+      where: { id: latestSend.id },
       data: { [field]: new Date() },
     });
   }

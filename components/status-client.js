@@ -137,6 +137,7 @@ export function StatusClient({ initialInvites }) {
                 <th>Data Contrato</th>
                 <th>Criado em</th>
                 <th>Respondida em</th>
+                <th>Histórico de envios</th>
                 <th>Status</th>
               </tr>
             </thead>
@@ -150,6 +151,27 @@ export function StatusClient({ initialInvites }) {
                     <td>{invite.contractDate ? new Date(invite.contractDate).toLocaleDateString("pt-BR", { timeZone: "UTC" }) : "—"}</td>
                     <td>{new Date(invite.createdAt).toLocaleDateString("pt-BR")}</td>
                     <td>{invite.respondedAt ? new Date(invite.respondedAt).toLocaleDateString("pt-BR") : "—"}</td>
+                    <td>
+                      <div className="send-history">
+                        {invite.sends.length > 0 ? (
+                          invite.sends.map((s) => (
+                            <span
+                              key={s.sendNumber}
+                              className={`send-chip ${s.startedAt ? "send-chip-started" : s.viewedAt ? "send-chip-viewed" : "send-chip-sent"}`}
+                              title={`Enviado em ${new Date(s.sentAt).toLocaleDateString("pt-BR")}${s.viewedAt ? ` · Abriu em ${new Date(s.viewedAt).toLocaleDateString("pt-BR")}` : ""}`}
+                            >
+                              {s.sendNumber}º {s.startedAt ? "Iniciou" : s.viewedAt ? "Abriu" : "Enviado"}
+                            </span>
+                          ))
+                        ) : invite.sentAt ? (
+                          <span className={`send-chip ${invite.startedAt ? "send-chip-started" : invite.viewedAt ? "send-chip-viewed" : "send-chip-sent"}`}>
+                            1º {invite.startedAt ? "Iniciou" : invite.viewedAt ? "Abriu" : "Enviado"}
+                          </span>
+                        ) : (
+                          <span className="send-chip-none">—</span>
+                        )}
+                      </div>
+                    </td>
                     <td>
                       {invite.responded ? (
                         <span className="status-badge status-responded">Respondida</span>
@@ -169,7 +191,7 @@ export function StatusClient({ initialInvites }) {
                 ))
               ) : (
                 <tr>
-                  <td className="muted" colSpan="7">
+                  <td className="muted" colSpan="8">
                     Nenhum convite encontrado para a busca realizada.
                   </td>
                 </tr>
