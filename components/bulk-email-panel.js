@@ -74,7 +74,7 @@ export function BulkEmailPanel({ pendingInvites }) {
 
   const eligibleFiltered = filtered.filter((inv) => {
     const s = statusMap[inv.id];
-    return (s === "pending" || s === "failed") && inv.clientEmail;
+    return (s === "pending" || s === "failed" || s === "sent") && inv.clientEmail;
   });
 
   const selectedEligible = eligibleFiltered.filter((inv) => selected.has(inv.id));
